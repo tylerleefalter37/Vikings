@@ -1,0 +1,3494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>⚔️ SAXON & DANE: 128³ SHIELDWALL FORGE</title>
+<style>
+  :root {
+    --void: #030406;
+    --obsidian: #0d0f15;
+    --gunmetal: #12151e;
+    --gunmetal-hi: #1a1f2c;
+    --silver: #d8e0ec;
+    --silver-dim: #7f8c9f;
+    --white: #ffffff;
+    --gold: #f5b041;
+    --emerald: #10b981;
+    --crimson: #ef4444;
+    --azure: #38bdf8;
+    --purple: #a855f7;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  html, body {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    background-color: var(--void);
+    color: var(--silver);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+  /* ULTRA-COMPACT STICKY MICRO-HUD (< 18% vertical phone height) */
+  .micro-hud {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(3, 4, 6, 0.96);
+    border-bottom: 1px solid rgba(216, 224, 236, 0.25);
+    backdrop-filter: blur(8px);
+    padding: 3px 6px 4px 6px;
+    width: 100%;
+    max-width: 100vw;
+  }
+
+  .hud-row-1 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    margin-bottom: 3px;
+  }
+
+  .brand-title {
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.4px;
+    color: var(--white);
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.35);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .hud-top-btns {
+    display: flex;
+    gap: 3px;
+    flex-shrink: 0;
+  }
+
+  .micro-btn {
+    background: var(--gunmetal);
+    color: var(--silver);
+    border: 1px solid rgba(216, 224, 236, 0.35);
+    border-radius: 4px;
+    padding: 2px 5px;
+    font-size: 9.5px;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .micro-btn.god-on {
+    background: linear-gradient(135deg, #4d3300, #b87700);
+    color: var(--white);
+    border-color: var(--gold);
+    box-shadow: 0 0 8px rgba(245, 176, 65, 0.6);
+  }
+
+  .hud-row-2 {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 3px;
+    margin-bottom: 3px;
+  }
+
+  .tele-pill {
+    background: var(--obsidian);
+    border: 1px solid rgba(216, 224, 236, 0.18);
+    border-radius: 4px;
+    padding: 2px 3px;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .tele-lbl {
+    font-size: 8px;
+    color: var(--silver-dim);
+    text-transform: uppercase;
+    display: block;
+    white-space: nowrap;
+  }
+
+  .tele-val {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--white);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+  }
+
+  .tele-val.gold { color: var(--gold); }
+  .tele-val.emerald { color: var(--emerald); }
+
+  /* LOCKED 2x3 NAVIGATION GRID */
+  .nav-grid-2x3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(2, auto);
+    gap: 3px;
+    width: 100%;
+  }
+
+  .nav-tab {
+    background: var(--gunmetal);
+    color: var(--silver);
+    border: 1px solid rgba(216, 224, 236, 0.22);
+    border-radius: 4px;
+    padding: 4px 2px;
+    font-size: 9.5px;
+    font-weight: 800;
+    text-align: center;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all 0.12s ease;
+  }
+
+  .nav-tab.active {
+    background: linear-gradient(180deg, #273042, #121722);
+    color: var(--white);
+    border-color: var(--white);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.35), inset 0 0 4px rgba(255, 255, 255, 0.2);
+  }
+
+  /* MAIN CONTAINER & PANELS */
+  .app-main {
+    width: 100%;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 6px;
+    overflow-x: hidden;
+  }
+
+  .tab-view {
+    display: none;
+    width: 100%;
+  }
+
+  .tab-view.active {
+    display: block;
+  }
+
+  .panel {
+    background: var(--obsidian);
+    border: 1px solid rgba(216, 224, 236, 0.22);
+    border-radius: 8px;
+    padding: 8px;
+    margin-bottom: 8px;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding-bottom: 6px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid rgba(216, 224, 236, 0.14);
+  }
+
+  .panel-title {
+    font-size: 12px;
+    font-weight: 900;
+    color: var(--white);
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+
+  /* BUTTONS & INPUTS */
+  .btn {
+    background: linear-gradient(180deg, #1f2533, #12151e);
+    color: var(--white);
+    border: 1px solid rgba(216, 224, 236, 0.4);
+    border-radius: 5px;
+    padding: 5px 8px;
+    font-size: 10.5px;
+    font-weight: 800;
+    cursor: pointer;
+    text-align: center;
+    transition: transform 0.06s ease, box-shadow 0.12s ease;
+  }
+
+  .btn:active {
+    transform: scale(0.97);
+  }
+
+  .btn-gold {
+    background: linear-gradient(180deg, #d98200, #8a4f00);
+    border-color: var(--gold);
+    color: var(--white);
+    box-shadow: 0 0 8px rgba(245, 176, 65, 0.3);
+  }
+
+  .btn-emerald {
+    background: linear-gradient(180deg, #0d9467, #065f42);
+    border-color: var(--emerald);
+    color: var(--white);
+  }
+
+  .btn-crimson {
+    background: linear-gradient(180deg, #b91c1c, #7f1d1d);
+    border-color: var(--crimson);
+    color: var(--white);
+  }
+
+  .btn-silver {
+    background: linear-gradient(180deg, #333d52, #1b212e);
+    border-color: var(--white);
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.25);
+  }
+
+  select, input[type="text"] {
+    background: var(--gunmetal);
+    color: var(--white);
+    border: 1px solid rgba(216, 224, 236, 0.3);
+    border-radius: 4px;
+    padding: 4px 6px;
+    font-size: 10.5px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* RESPONSIVE GRIDS */
+  .grid-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 6px;
+    width: 100%;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    width: 100%;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+    width: 100%;
+  }
+
+  .grid-4 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    width: 100%;
+  }
+
+  @media (min-width: 640px) {
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  /* UNIT CARD */
+  .unit-card {
+    background: var(--gunmetal);
+    border: 1px solid rgba(216, 224, 236, 0.24);
+    border-radius: 7px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .unit-card.masterwork {
+    border-color: var(--gold);
+    box-shadow: inset 0 0 10px rgba(245, 176, 65, 0.22);
+  }
+
+  .unit-thumb-wrap {
+    width: 100%;
+    height: 112px;
+    background: radial-gradient(circle at 50% 60%, #1f2738 0%, #07090e 85%);
+    border: 1px solid rgba(216, 224, 236, 0.16);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .unit-thumb-wrap img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .badge-tier {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    background: rgba(3, 4, 6, 0.85);
+    border: 1px solid rgba(216, 224, 236, 0.45);
+    border-radius: 3px;
+    padding: 1px 4px;
+    font-size: 9px;
+    font-weight: 900;
+  }
+
+  .badge-dex {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    background: rgba(3, 4, 6, 0.85);
+    color: var(--silver-dim);
+    border-radius: 3px;
+    padding: 1px 4px;
+    font-size: 8.5px;
+    font-weight: 700;
+  }
+
+  .badge-craft {
+    position: absolute;
+    bottom: 3px;
+    left: 3px;
+    right: 3px;
+    text-align: center;
+    background: rgba(3, 4, 6, 0.85);
+    font-size: 8.5px;
+    font-weight: 800;
+    padding: 1px 3px;
+    border-radius: 3px;
+    color: var(--gold);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .hp-bar-outer {
+    width: 100%;
+    height: 5px;
+    background: #06080c;
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .hp-bar-inner {
+    height: 100%;
+    background: var(--emerald);
+    transition: width 0.2s ease;
+  }
+
+  /* FORGE LAYOUT */
+  .forge-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  @media (min-width: 720px) {
+    .forge-layout {
+      grid-template-columns: 280px minmax(0, 1fr);
+    }
+  }
+
+  .canvas-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 50% 55%, #20293d 0%, #05070b 85%);
+    border: 1px solid var(--silver);
+    border-radius: 8px;
+    padding: 6px;
+    position: relative;
+  }
+
+  canvas.voxel-canvas {
+    width: 100%;
+    max-width: 260px;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    border-radius: 6px;
+    touch-action: none;
+    cursor: grab;
+  }
+
+  canvas.voxel-canvas:active {
+    cursor: grabbing;
+  }
+
+  /* 5-ZONE PAINT STUDIO */
+  .paint-zone-row {
+    background: var(--gunmetal);
+    border: 1px solid rgba(216, 224, 236, 0.2);
+    border-radius: 6px;
+    padding: 5px;
+    margin-bottom: 5px;
+  }
+
+  .paint-zone-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+    margin-bottom: 4px;
+  }
+
+  .swatch-row {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 3px;
+  }
+
+  .swatch-btn {
+    height: 16px;
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    cursor: pointer;
+  }
+
+  /* AUCTION LANES */
+  .snipe-box {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    gap: 8px;
+    align-items: center;
+    background: var(--gunmetal);
+    border: 1px solid var(--silver);
+    border-radius: 7px;
+    padding: 8px;
+  }
+
+  .seller-lane {
+    background: var(--gunmetal);
+    border: 1px solid rgba(216, 224, 236, 0.22);
+    border-radius: 6px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  /* MODALS & TOAST */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(3, 4, 6, 0.88);
+    backdrop-filter: blur(5px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+  }
+
+  .modal-backdrop.open {
+    display: flex;
+  }
+
+  .modal-card {
+    background: var(--obsidian);
+    border: 1px solid var(--silver);
+    border-radius: 9px;
+    padding: 10px;
+    width: 100%;
+    max-width: 460px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.9);
+  }
+
+  #toast-banner {
+    position: fixed;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 300;
+    background: rgba(13, 15, 21, 0.96);
+    color: var(--white);
+    border: 1px solid var(--gold);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 800;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.75);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    max-width: 92vw;
+    text-align: center;
+  }
+
+  #toast-banner.show {
+    opacity: 1;
+  }
+</style>
+</head>
+<body>
+
+<!-- STICKY MICRO-HUD (< 18% VERTICAL SCREEN HEIGHT) -->
+<header class="micro-hud">
+  <div class="hud-row-1">
+    <div class="brand-title">⚔️ SAXON &amp; DANE: 128³ FORGE</div>
+    <div class="hud-top-btns">
+      <button id="btn-god" class="micro-btn" onclick="Game.toggleGodMode()">⚡ GOD: OFF</button>
+      <button class="micro-btn" onclick="Game.openCodesModal()">📡 CODES</button>
+      <button class="micro-btn" onclick="Game.saveGame(true)">💾 SAVE</button>
+    </div>
+  </div>
+
+  <div class="hud-row-2">
+    <div class="tele-pill">
+      <span class="tele-lbl">Credits</span>
+      <span id="hud-credits" class="tele-val gold">◈500</span>
+    </div>
+    <div class="tele-pill">
+      <span class="tele-lbl">Supply</span>
+      <span id="hud-supply" class="tele-val emerald">1,000</span>
+    </div>
+    <div class="tele-pill">
+      <span class="tele-lbl">Owned Warriors</span>
+      <span id="hud-owned" class="tele-val">0</span>
+    </div>
+    <div class="tele-pill">
+      <span class="tele-lbl">Codex</span>
+      <span id="hud-codex" class="tele-val">0/1000</span>
+    </div>
+    <div class="tele-pill">
+      <span class="tele-lbl">Trials</span>
+      <span id="hud-trials" class="tele-val">0/150</span>
+    </div>
+  </div>
+
+  <nav class="nav-grid-2x3">
+    <button class="nav-tab active" data-tab="1" onclick="Game.switchTab(1)">1. 🛡️ Owned Warriors</button>
+    <button class="nav-tab" data-tab="2" onclick="Game.switchTab(2)">2. 🎨 Custom Forge</button>
+    <button class="nav-tab" data-tab="3" onclick="Game.switchTab(3)">3. 📦 Forge Crates</button>
+    <button class="nav-tab" data-tab="4" onclick="Game.switchTab(4)">4. 🔨 Auctions</button>
+    <button class="nav-tab" data-tab="5" onclick="Game.switchTab(5)">5. ⚔️ Battle &amp; Patrol</button>
+    <button class="nav-tab" data-tab="6" onclick="Game.switchTab(6)">6. 📜 High Command</button>
+  </nav>
+</header>
+
+<!-- MAIN 6-TAB VIEWPORT -->
+<main class="app-main">
+
+  <!-- TAB 1: OWNED WARRIORS, ARMORY TECH & COMMANDERS -->
+  <section id="tab-1" class="tab-view active">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">🛡️ Shieldwall Garrison &amp; Collector Vault</span>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+          <button class="btn btn-emerald" onclick="Game.repairAllUnits()">🔧 Repair All</button>
+          <button class="btn btn-silver" onclick="Game.openCodexModal()">📖 1,000 Codex</button>
+        </div>
+      </div>
+
+      <!-- Filters Bar -->
+      <div class="grid-4" style="margin-bottom:6px;align-items:center;">
+        <label style="display:flex;align-items:center;gap:4px;background:var(--gunmetal);padding:4px 6px;border-radius:4px;border:1px solid rgba(216,224,236,0.3);font-weight:700;cursor:pointer;">
+          <input type="checkbox" id="flt-vault" onchange="Game.renderInventory()"> 🔒 Vaulted Only
+        </label>
+        <select id="flt-tier" onchange="Game.renderInventory()">
+          <option value="all">All Tiers (T1–T10)</option>
+          <option value="0">T1: Ceorl / Thrall</option>
+          <option value="1">T2: Fyrdman</option>
+          <option value="2">T3: Drengr Raider</option>
+          <option value="3">T4: Hearthweru</option>
+          <option value="4">T5: Geneat Guard</option>
+          <option value="5">T6: Royal Thegn</option>
+          <option value="6">T7: Huscarl Veteran</option>
+          <option value="7">T8: Jomsviking Champion</option>
+          <option value="8">T9: Ealdorman / Hersir</option>
+          <option value="9">T10: Bretwalda / Jarl</option>
+        </select>
+        <select id="flt-class" onchange="Game.renderInventory()">
+          <option value="all">All 10 Heroic Classes</option>
+        </select>
+        <select id="flt-sort" onchange="Game.renderInventory()">
+          <option value="val_desc">Sort: Highest Value</option>
+          <option value="tier_desc">Sort: Highest Tier</option>
+          <option value="dex_asc">Sort: Codex #0001–#1000</option>
+          <option value="hp_asc">Sort: Lowest HP%</option>
+        </select>
+      </div>
+
+      <div id="inventory-grid" class="grid-cards"></div>
+    </div>
+
+    <!-- Inline Armory Tech Upgrades (4 Cards) -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">⚒️ Royal Armory Tech Upgrades</span>
+        <span style="font-size:10px;color:var(--silver-dim);">Permanent Shieldwall &amp; Forge Bonuses</span>
+      </div>
+      <div id="armory-tech-grid" class="grid-4"></div>
+    </div>
+
+    <!-- Inline Commanders Roster (State.pilots) -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">👑 Ealdormen &amp; Norse Jarls Roster</span>
+        <span id="pilot-count-lbl" style="font-size:10px;color:var(--gold);">0 Commanders</span>
+      </div>
+      <div id="pilots-grid" class="grid-cards"></div>
+    </div>
+  </section>
+
+  <!-- TAB 2: CUSTOM FORGE & 5-ZONE HEX PAINT STUDIO -->
+  <section id="tab-2" class="tab-view">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">🎨 Wayland's 128³ Custom Forge &amp; 5-Zone Paint Studio</span>
+        <button class="btn btn-silver" onclick="Game.randomizeForge()">🎲 Randomize Sculpt</button>
+      </div>
+
+      <div class="forge-layout">
+        <!-- Left: Live 60FPS 3D Turntable -->
+        <div class="canvas-stage">
+          <canvas id="forge-canvas" class="voxel-canvas" width="260" height="260"></canvas>
+          <div style="display:flex;gap:4px;width:100%;justify-content:center;margin-top:5px;">
+            <button class="micro-btn" onclick="Game.forgeCamReset()">🔄 Reset View</button>
+            <button class="micro-btn" onclick="Game.forgeToggleSpin()">⏯️ Spin</button>
+            <button class="micro-btn" onclick="Game.forgeZoom(0.15)">➕ Zoom</button>
+            <button class="micro-btn" onclick="Game.forgeZoom(-0.15)">➖ Zoom</button>
+          </div>
+          <div id="forge-appraisal-preview" style="margin-top:6px;text-align:center;font-size:10.5px;color:var(--gold);font-weight:800;"></div>
+        </div>
+
+        <!-- Right: Modular Parts + 5-Zone Hex Studio -->
+        <div>
+          <div class="grid-2" style="margin-bottom:6px;">
+            <div>
+              <label style="font-size:9.5px;color:var(--silver-dim);">1. Rarity Tier (T1–T10)</label>
+              <select id="fg-tier" onchange="Game.rebuildForgeVoxel()"></select>
+            </div>
+            <div>
+              <label style="font-size:9.5px;color:var(--silver-dim);">2. Faction Origin</label>
+              <select id="fg-faction" onchange="Game.rebuildForgeVoxel()"></select>
+            </div>
+            <div>
+              <label style="font-size:9.5px;color:var(--silver-dim);">3. Heroic Class</label>
+              <select id="fg-class" onchange="Game.rebuildForgeVoxel()"></select>
+            </div>
+            <div>
+              <label style="font-size:9.5px;color:var(--silver-dim);">4. Dynamic Pose (8)</label>
+              <select id="fg-pose" onchange="Game.rebuildForgeVoxel()"></select>
+            </div>
+            <div>
+              <label style="font-size:9.5px;color:var(--silver-dim);">5. Armor Style (6)</label>
+              <select id="fg-armor" onchange="Game.rebuildForgeVoxel()"></select>
+            </div>
+            <div>
+              <label style="font-size:9.5px;color:var(--silver-dim);">6. Helmet Pattern (10)</label>
+              <select id="fg-helmet" onchange="Game.rebuildForgeVoxel()"></select>
+            </div>
+            <div>
+              <label style="font-size:9.5px;color:var(--silver-dim);">7. Primary Weapon (11)</label>
+              <select id="fg-weapon" onchange="Game.rebuildForgeVoxel()"></select>
+            </div>
+            <div>
+              <label style="font-size:9.5px;color:var(--silver-dim);">8. Back Rig / Shield (6)</label>
+              <select id="fg-back" onchange="Game.rebuildForgeVoxel()"></select>
+            </div>
+            <div>
+              <label style="font-size:9.5px;color:var(--silver-dim);">9. Scenic Plinth (6)</label>
+              <select id="fg-plinth" onchange="Game.rebuildForgeVoxel()"></select>
+            </div>
+            <div>
+              <label style="font-size:9.5px;color:var(--silver-dim);">10. Custom Title</label>
+              <input type="text" id="fg-name" placeholder="e.g. Aethelstan's Bane" maxlength="26">
+            </div>
+          </div>
+
+          <!-- 5-Zone Hex Paint Studio -->
+          <div id="paint-zones-container"></div>
+
+          <!-- Forge & Appraise Action Button -->
+          <button id="btn-forge-craft" class="btn btn-gold" style="width:100%;padding:8px;font-size:12px;margin-top:4px;" onclick="Game.craftCustomMiniature()">
+            ⚒️ FORGE &amp; APPRAISE MINIATURE
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 3: FORGE CRATES & SUPPLY DEPOT -->
+  <section id="tab-3" class="tab-view">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">📦 Anglo-Saxon &amp; Norse Reliquary Warboxes</span>
+        <span style="font-size:10px;color:var(--gold);">Unbox #0001–#1000 Collector Miniatures</span>
+      </div>
+      <div id="crates-grid" class="grid-4"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">👑 Mead-Hall Commander Recruitment Pods</span>
+        <span style="font-size:10px;color:var(--silver-dim);">Recruit Ealdormen, Thegns &amp; Jarls</span>
+      </div>
+      <div id="pilot-pods-grid" class="grid-4"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">🌾 Fyrd Supply Quartermaster Depot</span>
+        <span style="font-size:10px;color:var(--emerald);">Provisions for Forging, Repairs &amp; Shieldwall Marches</span>
+      </div>
+      <div id="supply-depot-grid" class="grid-4"></div>
+    </div>
+  </section>
+
+  <!-- TAB 4: AUCTIONS (BARGAIN BUYER AUCTION + 5-LANE SELLER SYNDICATE) -->
+  <section id="tab-4" class="tab-view">
+    <!-- Top: 1-Lane Bargain Buyer Auction (Button strictly labeled BID, NOT SNIPE) -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">🔨 1-Lane Bargain Buyer Auction</span>
+        <span id="buyer-status-pill" style="font-size:10px;font-weight:900;color:var(--emerald);">LIVE LOT</span>
+      </div>
+
+      <div class="snipe-box">
+        <div class="unit-thumb-wrap" style="height:105px;" onclick="Game.inspectBuyerLot()">
+          <img id="buyer-thumb" src="" alt="Lot">
+          <span id="buyer-tier-badge" class="badge-tier">T1</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <div id="buyer-title" style="font-size:12px;font-weight:900;color:var(--white);">Loading Lot...</div>
+          <div id="buyer-meta" style="font-size:10px;color:var(--silver-dim);">Codex #0001</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;background:var(--obsidian);padding:4px 6px;border-radius:4px;">
+            <div>
+              <span style="font-size:8.5px;color:var(--silver-dim);display:block;">EST. VALUE</span>
+              <span id="buyer-est" style="font-size:11px;font-weight:800;color:var(--silver);">◈100</span>
+            </div>
+            <div>
+              <span style="font-size:8.5px;color:var(--silver-dim);display:block;">CURRENT BID</span>
+              <span id="buyer-bid" style="font-size:12px;font-weight:900;color:var(--gold);">◈15</span>
+            </div>
+            <div>
+              <span style="font-size:8.5px;color:var(--silver-dim);display:block;">HIGH BIDDER</span>
+              <span id="buyer-leader" style="font-size:10.5px;font-weight:900;color:var(--crimson);">Mercian Reeve</span>
+            </div>
+            <div>
+              <span style="font-size:8.5px;color:var(--silver-dim);display:block;">CLOCK</span>
+              <span id="buyer-timer" style="font-size:12px;font-weight:900;color:var(--white);">10.0s</span>
+            </div>
+          </div>
+          <div id="buyer-verdict-banner" style="font-size:10px;font-weight:800;color:var(--gold);min-height:14px;"></div>
+          <div style="display:flex;gap:5px;">
+            <button id="btn-buyer-bid" class="btn btn-gold" style="flex:2;padding:7px;font-size:12px;" onclick="Game.placeBuyerBid(1)">
+              🔨 BID (+◈1)
+            </button>
+            <button id="btn-buyer-bid5" class="btn btn-silver" style="flex:1;padding:7px;font-size:11px;" onclick="Game.placeBuyerBid(5)">
+              🔨 BID (+◈5)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom: 5-Lane Syndicate Seller Auctions -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">🏛️ 5-Lane Witan &amp; Danelaw Seller Syndicate</span>
+        <span style="font-size:10px;color:var(--gold);">1.5% Chance per Tick for 2x–20x [BID WAR] Spike!</span>
+      </div>
+
+      <div style="display:flex;gap:5px;margin-bottom:6px;">
+        <select id="seller-unit-select" style="flex:1;"></select>
+        <button class="btn btn-emerald" onclick="Game.listSelectedUnitForAuction()">🔨 List on Open Lane</button>
+      </div>
+
+      <div id="seller-lanes-grid" class="grid-cards"></div>
+    </div>
+  </section>
+
+  <!-- TAB 5: BATTLE & PATROL (1V1/3V3/5V5 WARGAME + 6 SECTOR PATROLS) -->
+  <section id="tab-5" class="tab-view">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">⚔️ Tabletop Shieldwall Wargame Arena (2D6 Tactical)</span>
+        <div style="display:flex;gap:4px;">
+          <button id="mode-1v1" class="micro-btn god-on" onclick="Game.setBattleMode(1)">1v1 Duel</button>
+          <button id="mode-3v3" class="micro-btn" onclick="Game.setBattleMode(3)">3v3 Cotterie</button>
+          <button id="mode-5v5" class="micro-btn" onclick="Game.setBattleMode(5)">5v5 Shieldwall</button>
+        </div>
+      </div>
+
+      <div style="font-size:10px;color:var(--silver-dim);margin-bottom:6px;">
+        Counter Triangle (+45% DMG): <b>Infantry Shieldwall (A)</b> &gt; <b>Raider Vanguard (B)</b> &gt; <b>Ranged / Skirmish (C)</b> &gt; <b>Infantry (A)</b>. Victory yields <b>55% Silver Spoils + 45% Enemy Capture Chance</b>!
+      </div>
+
+      <div class="grid-2" style="margin-bottom:6px;">
+        <div style="background:var(--gunmetal);padding:6px;border-radius:6px;border:1px solid rgba(16,185,129,0.35);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <span style="font-weight:900;color:var(--emerald);">🛡️ YOUR FYRD HOST</span>
+            <button class="micro-btn" onclick="Game.autoFillSquad()">⚡ Auto-Muster Best</button>
+          </div>
+          <div id="battle-player-slots" style="display:flex;flex-direction:column;gap:4px;"></div>
+        </div>
+
+        <div style="background:var(--gunmetal);padding:6px;border-radius:6px;border:1px solid rgba(239,68,68,0.35);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <span style="font-weight:900;color:var(--crimson);">💀 RIVAL WARBAND</span>
+            <button class="micro-btn" onclick="Game.rollEnemyHost()">🎲 Scout New Host</button>
+          </div>
+          <div id="battle-enemy-slots" style="display:flex;flex-direction:column;gap:4px;"></div>
+        </div>
+      </div>
+
+      <!-- 5 Tactical Orders -->
+      <div style="margin-bottom:6px;">
+        <div style="font-size:10px;font-weight:800;color:var(--gold);margin-bottom:3px;">EXECUTE TACTICAL ORDER (2D6 CLASH):</div>
+        <div class="grid-3" id="tactical-orders-bar">
+          <button class="btn btn-silver" onclick="Game.executeBattleRound('shieldwall')">🛡️ Shieldwall Brace</button>
+          <button class="btn btn-gold" onclick="Game.executeBattleRound('wedge')">🐗 Boar-Snout Wedge</button>
+          <button class="btn btn-emerald" onclick="Game.executeBattleRound('flank')">🗡️ Seax Flank</button>
+          <button class="btn" onclick="Game.executeBattleRound('feigned')">🏹 Feigned Retreat</button>
+          <button class="btn btn-crimson" onclick="Game.executeBattleRound('berserk')">🐺 Berserk Charge</button>
+          <button class="btn" onclick="Game.autoResolveBattle()">⚡ Auto-Resolve Clash</button>
+        </div>
+      </div>
+
+      <div id="battle-log" style="background:var(--void);border:1px solid rgba(216,224,236,0.2);border-radius:5px;padding:6px;font-size:10px;max-height:125px;overflow-y:auto;color:var(--silver);"></div>
+    </div>
+
+    <!-- 6 Saxon & Danelaw Sector Patrols -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">🧭 6 Saxon &amp; Danelaw Frontier Sector Patrols</span>
+        <span style="font-size:10px;color:var(--emerald);">Assign Warriors in Tab 1 or Below for Passive Spoils</span>
+      </div>
+      <div id="patrols-grid" class="grid-3"></div>
+    </div>
+  </section>
+
+  <!-- TAB 6: HIGH COMMAND (AUTOMATION, WITAN COMMISSIONS & 150 MILESTONES) -->
+  <section id="tab-6" class="tab-view">
+    <!-- 3 Automation Toggles -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">⚙️ Witan High Command Automation Charter</span>
+        <span style="font-size:10px;color:var(--silver-dim);">Autonomous Fyrd Operations</span>
+      </div>
+      <div class="grid-3">
+        <button id="auto-march-btn" class="btn" onclick="Game.toggleAutomation('march')">⚔️ Auto-March: OFF</button>
+        <button id="auto-repair-btn" class="btn" onclick="Game.toggleAutomation('repair')">🔧 Auto-Repair: OFF</button>
+        <button id="auto-supply-btn" class="btn" onclick="Game.toggleAutomation('supply')">🌾 Auto-Supply: OFF</button>
+      </div>
+    </div>
+
+    <!-- 6 Rotating Witan Guild Commissions -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">📜 6 Royal Witan &amp; Jarl Guild Commissions</span>
+        <button class="micro-btn" onclick="Game.generateCommissions(true)">🔄 Refresh Royal Writs</button>
+      </div>
+      <div id="commissions-grid" class="grid-3"></div>
+    </div>
+
+    <!-- 150 Milestones across 6 Books -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">🏆 Anglo-Saxon Chronicle: 150 Trials (6 Books)</span>
+        <button class="btn btn-gold" onclick="Game.claimAllMilestones()">✨ Claim All Completed</button>
+      </div>
+      <div id="milestone-books-bar" class="grid-3" style="margin-bottom:6px;"></div>
+      <div id="milestones-list" class="grid-2" style="max-height:320px;overflow-y:auto;"></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- 3D INSPECTOR MODAL (ISOLATED SURFACESNAPSHOT) -->
+<div id="inspector-modal" class="modal-backdrop">
+  <div class="modal-card">
+    <div class="panel-header">
+      <span id="insp-title" class="panel-title">3D Miniature Inspector</span>
+      <button class="micro-btn" onclick="Game.closeInspector()">✖ Close</button>
+    </div>
+    <div class="canvas-stage">
+      <canvas id="inspector-canvas" class="voxel-canvas" width="260" height="260"></canvas>
+      <div style="display:flex;gap:4px;margin-top:5px;">
+        <button class="micro-btn" onclick="Game.inspCamReset()">🔄 Reset</button>
+        <button class="micro-btn" onclick="Game.inspZoom(0.15)">➕ Zoom</button>
+        <button class="micro-btn" onclick="Game.inspZoom(-0.15)">➖ Zoom</button>
+      </div>
+    </div>
+    <div id="insp-details" style="margin-top:6px;font-size:10.5px;color:var(--silver);"></div>
+    <div style="margin-top:6px;background:var(--gunmetal);padding:5px;border-radius:5px;display:flex;justify-content:space-between;align-items:center;gap:4px;">
+      <input type="text" id="insp-trade-code" readonly style="font-family:monospace;font-size:10px;">
+      <button class="btn btn-silver" onclick="Game.copyInspectorCode()">📋 Copy Code</button>
+    </div>
+  </div>
+</div>
+
+<!-- BASE36 TRADE CODES MODAL -->
+<div id="codes-modal" class="modal-backdrop">
+  <div class="modal-card">
+    <div class="panel-header">
+      <span class="panel-title">📡 Base36 Runic Trade Codec &amp; Gift Codes</span>
+      <button class="micro-btn" onclick="Game.closeCodesModal()">✖ Close</button>
+    </div>
+    <div style="font-size:10.5px;color:var(--silver-dim);margin-bottom:6px;">
+      Import or share Standard Collector Codes (<code>WF-XXX</code>), 5-Zone Custom Painted Codes (<code>WFC-...</code>), Commander Codes (<code>CMD-...</code>), or Secret Royal Gift Codes:
+    </div>
+    <div style="display:flex;gap:5px;margin-bottom:8px;">
+      <input type="text" id="trade-code-input" placeholder="Paste WF-..., WFC-..., CMD-... or Gift Code">
+      <button class="btn btn-gold" onclick="Game.redeemTradeCode()">📥 Redeem</button>
+    </div>
+    <div style="font-size:10px;font-weight:800;color:var(--gold);margin-bottom:4px;">QUICK PROMO RUNES (CLICK TO REDEEM):</div>
+    <div class="grid-2" style="margin-bottom:6px;">
+      <button class="btn btn-silver" onclick="Game.quickCode('ALFRED-878')">👑 ALFRED-878 (+◈2,500 &amp; Wessex Thegn)</button>
+      <button class="btn btn-silver" onclick="Game.quickCode('DANELAW-YORK')">🐺 DANELAW-YORK (+1,500 Supply &amp; Berserker)</button>
+      <button class="btn btn-silver" onclick="Game.quickCode('SUTTON-HOO')">🪖 SUTTON-HOO (T8 Relic Bretwalda Guard)</button>
+      <button class="btn btn-silver" onclick="Game.quickCode('ULFBERHT-STEEL')">⚔️ ULFBERHT-STEEL (Custom Runic Huscarl)</button>
+    </div>
+  </div>
+</div>
+
+<!-- 1,000 COLLECTOR CODEX MODAL -->
+<div id="codex-modal" class="modal-backdrop">
+  <div class="modal-card" style="max-width:620px;">
+    <div class="panel-header">
+      <span class="panel-title">📖 1,000 Collector Matrix (#0001–#1000)</span>
+      <button class="micro-btn" onclick="Game.closeCodexModal()">✖ Close</button>
+    </div>
+    <div style="display:flex;gap:5px;margin-bottom:6px;">
+      <select id="codex-tier-flt" onchange="Game.renderCodexModal()">
+        <option value="0">Tier 1 (#0001–#0100) Ceorl / Thrall</option>
+        <option value="1">Tier 2 (#0101–#0200) Fyrdman</option>
+        <option value="2">Tier 3 (#0201–#0300) Drengr Raider</option>
+        <option value="3">Tier 4 (#0301–#0400) Hearthweru</option>
+        <option value="4">Tier 5 (#0401–#0500) Geneat Guard</option>
+        <option value="5">Tier 6 (#0501–#0600) Royal Thegn</option>
+        <option value="6">Tier 7 (#0601–#0700) Huscarl Veteran</option>
+        <option value="7">Tier 8 (#0701–#0800) Jomsviking</option>
+        <option value="8">Tier 9 (#0801–#0900) Ealdorman / Hersir</option>
+        <option value="9">Tier 10 (#0901–#1000) Bretwalda / Jarl</option>
+      </select>
+    </div>
+    <div id="codex-matrix-grid" class="grid-2" style="max-height:60vh;overflow-y:auto;"></div>
+  </div>
+</div>
+
+<div id="toast-banner"></div>
+
+<script>
+/* ============================================================================
+   1. LORE CONSTANTS: THE 1,000 ANGLO-SAXON & VIKING COLLECTOR MATRIX
+   ============================================================================ */
+const TIERS = [
+  { id: 0, code: "T1", name: "Ceorl / Thrall", baseVal: 15, hp: 90, atk: 14, color: "#94a3b8" },
+  { id: 1, code: "T2", name: "Fyrd Levy", baseVal: 45, hp: 135, atk: 22, color: "#cbd5e1" },
+  { id: 2, code: "T3", name: "Drengr Raider", baseVal: 130, hp: 195, atk: 34, color: "#10b981" },
+  { id: 3, code: "T4", name: "Hearthweru", baseVal: 380, hp: 280, atk: 50, color: "#34d399" },
+  { id: 4, code: "T5", name: "Geneat Retainer", baseVal: 1100, hp: 410, atk: 74, color: "#38bdf8" },
+  { id: 5, code: "T6", name: "Royal Thegn", baseVal: 3200, hp: 600, atk: 110, color: "#60a5fa" },
+  { id: 6, code: "T7", name: "King's Huscarl", baseVal: 9500, hp: 890, atk: 165, color: "#a855f7" },
+  { id: 7, code: "T8", name: "Jomsviking Elite", baseVal: 28000, hp: 1320, atk: 245, color: "#c084fc" },
+  { id: 8, code: "T9", name: "Ealdorman / Hersir", baseVal: 85000, hp: 1980, atk: 370, color: "#f5b041" },
+  { id: 9, code: "T10", name: "Bretwalda / Sea-Jarl", baseVal: 250000, hp: 3100, atk: 560, color: "#ef4444" }
+];
+
+const FACTIONS = [
+  { id: 0, name: "Wessex Royal Guard", palette: ["#8b1e1e", "#d4af37", "#f59e0b", "#d8e0ec", "#4b5563"] },
+  { id: 1, name: "Mercian Fyrd", palette: ["#1d4ed8", "#eab308", "#93c5fd", "#e2e8f0", "#57534e"] },
+  { id: 2, name: "Northumbrian Earldom", palette: ["#7f1d1d", "#facc15", "#b91c1c", "#cbd5e1", "#44403c"] },
+  { id: 3, name: "East Anglian Hearthweru", palette: ["#0f766e", "#f5b041", "#2dd4bf", "#e2e8f0", "#52525b"] },
+  { id: 4, name: "Kentish Cantwara", palette: ["#991b1b", "#f8fafc", "#dc2626", "#cbd5e1", "#3f3f46"] },
+  { id: 5, name: "Jelling Danes", palette: ["#1e293b", "#dc2626", "#991b1b", "#d8e0ec", "#334155"] },
+  { id: 6, name: "Hordaland Norsemen", palette: ["#172554", "#38bdf8", "#cbd5e1", "#f1f5f9", "#475569"] },
+  { id: 7, name: "Jomsviking Brotherhood", palette: ["#18181b", "#f5b041", "#71717a", "#ffffff", "#27272a"] },
+  { id: 8, name: "York Danelaw Host", palette: ["#14532d", "#d97706", "#166534", "#e2e8f0", "#44403c"] },
+  { id: 9, name: "Varangian Rus Guard", palette: ["#581c87", "#f5b041", "#b91c1c", "#ffffff", "#3b0764"] }
+];
+
+const CLASSES = [
+  { id: 0, name: "Saxon Huscarl", role: "A", pose: "heroic", armor: "heavy", helmet: "kabuto", weapon: "eweb", back: "both", plinth: "boulder" },
+  { id: 1, name: "Fyrd Spearman", role: "A", pose: "heroic", armor: "standard", helmet: "dome", weapon: "spear", back: "jetpack", plinth: "boulder" },
+  { id: 2, name: "Royal Thegn", role: "A", pose: "spire", armor: "heavy", helmet: "crest", weapon: "darksaber", back: "cape", plinth: "spire" },
+  { id: 3, name: "Ealdorman Champion", role: "A", pose: "rock_perch", armor: "heavy", helmet: "oni", weapon: "rotary", back: "sashimono", plinth: "ruins" },
+  { id: 4, name: "Seax Skirmisher", role: "C", pose: "iaijutsu", armor: "skirmish", helmet: "cowl", weapon: "katana", back: "katanas", plinth: "smoke" },
+  { id: 5, name: "Linden Shieldwall", role: "A", pose: "kneel", armor: "standard", helmet: "spikes", weapon: "rotary", back: "both", plinth: "boulder" },
+  { id: 6, name: "Dane Berserker", role: "B", pose: "leap", armor: "ronin", helmet: "tvisor", weapon: "dual", back: "both", plinth: "lava" },
+  { id: 7, name: "Ulfhednar Wolf-Warrior", role: "B", pose: "strafe", armor: "fur", helmet: "horns", weapon: "naginata", back: "fly", plinth: "boulder" },
+  { id: 8, name: "Skald Banner-Bearer", role: "B", pose: "hover", armor: "samurai", helmet: "owl", weapon: "pyro", back: "sashimono", plinth: "spire" },
+  { id: 9, name: "Longbow Reeve", role: "C", pose: "rock_perch", armor: "skirmish", helmet: "cowl", weapon: "amban", back: "fly", plinth: "ruins" }
+];
+
+const POSES = [
+  { id: "heroic", name: "Shieldwall Stance (Heroic)" },
+  { id: "rock_perch", name: "Crag Perch (Elevated)" },
+  { id: "hover", name: "Valkyrie Ascent (Dynamic)" },
+  { id: "leap", name: "Berserk Leap (Airborne)" },
+  { id: "kneel", name: "Kneeling Oath (Braced)" },
+  { id: "iaijutsu", name: "Seax Fast-Draw (Low Crouch)" },
+  { id: "spire", name: "Runestone Watch (Sentinel)" },
+  { id: "strafe", name: "Flank Strafe (Raider Rush)" }
+];
+
+const ARMORS = [
+  { id: "standard", name: "Maille Byrnie (Ring-Mail)" },
+  { id: "samurai", name: "Lamellar Birka Scales" },
+  { id: "ronin", name: "Saxon Tunic & Leather" },
+  { id: "heavy", name: "Royal Huscarl Hauberk" },
+  { id: "fur", name: "Wolf-Pelt Ulfhednar" },
+  { id: "skirmish", name: "Padded Linen Gambeson" }
+];
+
+const HELMETS = [
+  { id: "tvisor", name: "Gjermundbu Spectacle Helm" },
+  { id: "kabuto", name: "Coppergate Nasal Helm" },
+  { id: "oni", name: "Sutton Hoo Mask Helm" },
+  { id: "crest", name: "Benty Grange Boar-Crest" },
+  { id: "owl", name: "Raven-Winged Valkyrie Helm" },
+  { id: "heavy", name: "Varangian Great Helm" },
+  { id: "horns", name: "Ceremonial Horned Helm" },
+  { id: "spikes", name: "Reinforced Spangenhelm" },
+  { id: "cowl", name: "Maille Coif & Leather Hood" },
+  { id: "dome", name: "Conical Iron Skullcap" }
+];
+
+const WEAPONS = [
+  { id: "darksaber", name: "Runic Ulfberht Broadsword" },
+  { id: "katana", name: "Heavy Saxon Langseax" },
+  { id: "naginata", name: "Hewing Spear / Atgeir" },
+  { id: "amban", name: "Francisca & Throwing Javelin" },
+  { id: "rotary", name: "Broad-Axe & Linden Shield" },
+  { id: "dual", name: "Twin Viking Beard-Axes" },
+  { id: "spear", name: "Saxon Ash Spear & Shield" },
+  { id: "hammer", name: "Wayland Blacksmith Maul" },
+  { id: "pyro", name: "Pitch-Fire Torch & Seax" },
+  { id: "blades", name: "Twin Broken-Back Seaxes" },
+  { id: "eweb", name: "Two-Handed Huscarl Dane-Axe" }
+];
+
+const BACK_RIGS = [
+  { id: "both", name: "Round Shield & Crossed Axes" },
+  { id: "sashimono", name: "Dragon / Raven War-Banner" },
+  { id: "jetpack", name: "Slung Linden Boss Shield" },
+  { id: "cape", name: "Heavy Wool Cloak & Brooch" },
+  { id: "fly", name: "War-Quiver & Wolf Pelt" },
+  { id: "katanas", name: "Crossed Seax Scabbards" }
+];
+
+const PLINTHS = [
+  { id: "boulder", name: "Mossy Highland Crag" },
+  { id: "spire", name: "Carved Jelling Runestone" },
+  { id: "lava", name: "Burning Timber Mead-Hall" },
+  { id: "anvil", name: "Wayland's Iron Forge Anvil" },
+  { id: "smoke", name: "Sea-Mist Longship Prow" },
+  { id: "ruins", name: "Roman-Britain Stone Ruin" }
+];
+
+const SWATCHES = [
+  "#8b1e1e", "#1d4ed8", "#14532d", "#581c87", "#1e293b", "#44403c",
+  "#f5b041", "#d4af37", "#d8e0ec", "#94a3b8", "#dc2626", "#10b981"
+];
+
+const ZONE_LABELS = [
+  "Zone 1: Primary Maille / Tunic",
+  "Zone 2: Secondary Trim / Lamellar",
+  "Zone 3: Shield / Cloak Heraldry",
+  "Zone 4: Weapon Steel / Runes",
+  "Zone 5: Scenic Plinth Base"
+];
+
+const TECH_DEFS = [
+  { id: "atk", name: "Pattern-Welded Smithing", desc: "+8% Warrior ATK per Lv in Shieldwall Clashes", baseCost: 120 },
+  { id: "hp", name: "Linden Shield Bracing", desc: "+10% Max HP & Armor per Lv", baseCost: 120 },
+  { id: "supply", name: "Mead-Hall Quartermaster", desc: "-6% Forge & Repair Supply Cost per Lv", baseCost: 150 },
+  { id: "spoils", name: "Witan Spoils Charter", desc: "+12% Battle & Patrol Silver Spoils per Lv", baseCost: 180 }
+];
+
+const PATROL_SECTORS = [
+  { id: 0, name: "Winchester Royal Road", desc: "Wessex Heartlands", credRate: 12, supRate: 8 },
+  { id: 1, name: "Offa's Dyke Frontier", desc: "Mercian Border Marches", credRate: 24, supRate: 14 },
+  { id: 2, name: "Bebbanburg Sea-Cliffs", desc: "Northumbrian CoastWatch", credRate: 45, supRate: 22 },
+  { id: 3, name: "Jorvik Minster Market", desc: "York Danelaw Trade Hub", credRate: 85, supRate: 40 },
+  { id: 4, name: "Lindisfarne Causeway", desc: "Holy Island Sea-Approach", credRate: 160, supRate: 70 },
+  { id: 5, name: "Thames Longship Blockade", desc: "Lundenwic River Fort", credRate: 310, supRate: 125 }
+];
+
+const MILESTONE_BOOKS = [
+  { id: 0, name: "I. Fyrd Muster", stat: "totalCollected", mult: 2, desc: "Acquire Collector Miniatures" },
+  { id: 1, name: "II. Wayland's Forge", stat: "totalForged", mult: 1, desc: "Forge Custom Miniatures in Tab 2" },
+  { id: 2, name: "III. Witan Auctions", stat: "totalAuctions", mult: 1, desc: "Win or Sell Auction Lots in Tab 4" },
+  { id: 3, name: "IV. Shieldwall Glory", stat: "totalBattlesWon", mult: 1, desc: "Win Tabletop Battles in Tab 5" },
+  { id: 4, name: "V. Danelaw Marches", stat: "totalPatrolTicks", mult: 10, desc: "Complete Frontier Patrol Ticks" },
+  { id: 5, name: "VI. Bretwalda Hoard", stat: "codexCount", mult: 3, desc: "Unlock Unique #0001–#1000 Codex Entries" }
+];
+
+/* ============================================================================
+   2. SINGLE SHARED 128³ SPARSE 3D VOXEL ENGINE KERNEL + SURFACESNAPSHOT
+   ============================================================================ */
+const VoxelKernel = (() => {
+  const SIZE = 128;
+  const TOTAL = SIZE * SIZE * SIZE; // 2,097,152 voxels
+  const voxColor = new Uint8Array(TOTAL);
+  const voxStamp = new Uint16Array(TOTAL);
+  let currentStamp = 1;
+
+  // Dynamic 32-color palette per sculpt bake (RGB packed)
+  const paletteR = new Uint8Array(32);
+  const paletteG = new Uint8Array(32);
+  const paletteB = new Uint8Array(32);
+
+  // Dirty bounding box for fast surface extraction
+  let minX = 127, maxX = 0, minY = 127, maxY = 0, minZ = 127, maxZ = 0;
+
+  function clearGrid() {
+    currentStamp++;
+    if (currentStamp >= 65530) {
+      voxStamp.fill(0);
+      currentStamp = 1;
+    }
+    minX = 127; maxX = 0;
+    minY = 127; maxY = 0;
+    minZ = 127; maxZ = 0;
+  }
+
+  function hexToRgb(hex) {
+    const clean = String(hex || "#888888").replace(/[^0-9a-fA-F]/g, "");
+    const n = parseInt(clean.length === 6 ? clean : "888888", 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+
+  function setPaletteSlot(slot, r, g, b) {
+    paletteR[slot] = Math.max(0, Math.min(255, r | 0));
+    paletteG[slot] = Math.max(0, Math.min(255, g | 0));
+    paletteB[slot] = Math.max(0, Math.min(255, b | 0));
+  }
+
+  function setupPalette(hexZones) {
+    // Slots 1..5: Base 5 zones
+    // Slots 6..10: Darkened shade of 5 zones
+    // Slots 11..15: Highlight shade of 5 zones
+    for (let i = 0; i < 5; i++) {
+      const [r, g, b] = hexToRgb(hexZones[i]);
+      setPaletteSlot(i + 1, r, g, b);
+      setPaletteSlot(i + 6, r * 0.68, g * 0.68, b * 0.68);
+      setPaletteSlot(i + 11, Math.min(255, r * 1.25 + 18), Math.min(255, g * 1.25 + 18), Math.min(255, b * 1.25 + 18));
+    }
+    // Fixed anatomical & material slots
+    setPaletteSlot(16, 232, 190, 158); // Skin warm
+    setPaletteSlot(17, 195, 148, 116); // Skin shaded
+    setPaletteSlot(18, 138, 86, 42);   // Saxon/Viking braided beard / hair
+    setPaletteSlot(19, 92, 58, 28);    // Ash spear shaft / linden wood plank
+    setPaletteSlot(20, 40, 44, 54);    // Dark iron / charcoal maille shadow
+    setPaletteSlot(21, 225, 232, 240); // Polished silver / Ulfberht fuller steel
+    setPaletteSlot(22, 245, 176, 65);  // Gilded bronze / Sutton Hoo gold trim
+    setPaletteSlot(23, 255, 95, 35);   // Hearth ember / pitch flame
+    setPaletteSlot(24, 58, 95, 52);    // Highland moss
+  }
+
+  function setVox(x, y, z, colIdx) {
+    const ix = x | 0, iy = y | 0, iz = z | 0;
+    if (ix < 2 || ix > 125 || iy < 2 || iy > 125 || iz < 2 || iz > 125) return;
+    const idx = (iy << 14) | (iz << 7) | ix;
+    voxStamp[idx] = currentStamp;
+    voxColor[idx] = colIdx;
+    if (ix < minX) minX = ix;
+    if (ix > maxX) maxX = ix;
+    if (iy < minY) minY = iy;
+    if (iy > maxY) maxY = iy;
+    if (iz < minZ) minZ = iz;
+    if (iz > maxZ) maxZ = iz;
+  }
+
+  function getVox(x, y, z) {
+    if (x < 0 || x >= 128 || y < 0 || y >= 128 || z < 0 || z >= 128) return 0;
+    const idx = (y << 14) | (z << 7) | x;
+    return voxStamp[idx] === currentStamp ? voxColor[idx] : 0;
+  }
+
+  // Required Core Primitives
+  function fillEllipsoid(cx, cy, cz, rx, ry, rz, colIdx) {
+    const x0 = Math.max(2, Math.floor(cx - rx)), x1 = Math.min(125, Math.ceil(cx + rx));
+    const y0 = Math.max(2, Math.floor(cy - ry)), y1 = Math.min(125, Math.ceil(cy + ry));
+    const z0 = Math.max(2, Math.floor(cz - rz)), z1 = Math.min(125, Math.ceil(cz + rz));
+    const invRx2 = 1 / (rx * rx || 1), invRy2 = 1 / (ry * ry || 1), invRz2 = 1 / (rz * rz || 1);
+    for (let y = y0; y <= y1; y++) {
+      const dy2 = (y - cy) * (y - cy) * invRy2;
+      for (let z = z0; z <= z1; z++) {
+        const dz2 = (z - cz) * (z - cz) * invRz2;
+        if (dy2 + dz2 > 1.0) continue;
+        for (let x = x0; x <= x1; x++) {
+          const dx2 = (x - cx) * (x - cx) * invRx2;
+          if (dx2 + dy2 + dz2 <= 1.0) setVox(x, y, z, colIdx);
+        }
+      }
+    }
+  }
+
+  function fillShellBox(x0, y0, z0, x1, y1, z1, colIdx) {
+    const ax = Math.max(2, Math.min(x0, x1) | 0), bx = Math.min(125, Math.max(x0, x1) | 0);
+    const ay = Math.max(2, Math.min(y0, y1) | 0), by = Math.min(125, Math.max(y0, y1) | 0);
+    const az = Math.max(2, Math.min(z0, z1) | 0), bz = Math.min(125, Math.max(z0, z1) | 0);
+    for (let y = ay; y <= by; y++) {
+      for (let z = az; z <= bz; z++) {
+        for (let x = ax; x <= bx; x++) {
+          if (x === ax || x === bx || y === ay || y === by || z === az || z === bz) {
+            setVox(x, y, z, colIdx);
+          }
+        }
+      }
+    }
+  }
+
+  function fillShellCylinder(cx, y0, y1, cz, rOuter, rInner, colIdx) {
+    const ay = Math.max(2, Math.min(y0, y1) | 0), by = Math.min(125, Math.max(y0, y1) | 0);
+    const x0 = Math.max(2, Math.floor(cx - rOuter)), x1 = Math.min(125, Math.ceil(cx + rOuter));
+    const z0 = Math.max(2, Math.floor(cz - rOuter)), z1 = Math.min(125, Math.ceil(cz + rOuter));
+    const ro2 = rOuter * rOuter, ri2 = rInner * rInner;
+    for (let y = ay; y <= by; y++) {
+      for (let z = z0; z <= z1; z++) {
+        const dz2 = (z - cz) * (z - cz);
+        for (let x = x0; x <= x1; x++) {
+          const d2 = (x - cx) * (x - cx) + dz2;
+          if (d2 <= ro2 && d2 >= ri2) setVox(x, y, z, colIdx);
+        }
+      }
+    }
+  }
+
+  function drawTaperedLimb(x0, y0, z0, x1, y1, z1, r0, r1, colIdx) {
+    const dx = x1 - x0, dy = y1 - y0, dz = z1 - z0;
+    const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+    const steps = Math.max(2, Math.ceil(dist * 1.6));
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const cx = x0 + dx * t;
+      const cy = y0 + dy * t;
+      const cz = z0 + dz * t;
+      const r = r0 + (r1 - r0) * t;
+      fillEllipsoid(cx, cy, cz, r, r, r, colIdx);
+    }
+  }
+
+  // Helper: Sculpt Round Saxon/Viking Linden Shield with Plank Lines, Iron Rim & Boss
+  function drawRoundBossShield(cx, cy, cz, radius, normalX, colWood, colHeraldry, colRim) {
+    const r2 = radius * radius;
+    const innerR2 = (radius - 2.2) * (radius - 2.2);
+    const bossR2 = (radius * 0.32) * (radius * 0.32);
+    for (let dy = -radius; dy <= radius; dy++) {
+      for (let dz = -radius; dz <= radius; dz++) {
+        const d2 = dy * dy + dz * dz;
+        if (d2 > r2) continue;
+        // Slight curved dish
+        const dish = Math.round((1 - d2 / r2) * 1.5) * Math.sign(normalX || 1);
+        for (let t = -1; t <= 1; t++) {
+          const vx = Math.round(cx + dish + t);
+          const vy = Math.round(cy + dy);
+          const vz = Math.round(cz + dz);
+          if (d2 > innerR2) {
+            setVox(vx, vy, vz, colRim); // Iron shield rim
+          } else if (d2 <= bossR2) {
+            setVox(vx + Math.sign(normalX || 1), vy, vz, 21); // Central iron umbo boss
+          } else {
+            // Alternating painted heraldry cross / planks
+            const isCross = Math.abs(dy) <= 2.2 || Math.abs(dz) <= 2.2;
+            const plankSeam = (Math.abs(dy) % 5 === 0);
+            setVox(vx, vy, vz, plankSeam ? 19 : (isCross ? colHeraldry : colWood));
+          }
+        }
+      }
+    }
+  }
+
+  // Build Complete 128³ Saxon/Norse Miniature Sculpt
+  function buildMiniatureToKernel(spec) {
+    clearGrid();
+    const zones = spec.colors || FACTIONS[spec.faction || 0].palette;
+    setupPalette(zones);
+
+    const pose = spec.pose || "heroic";
+    const armor = spec.armor || "standard";
+    const helmet = spec.helmet || "kabuto";
+    const weapon = spec.weapon || "rotary";
+    const back = spec.back || "both";
+    const plinth = spec.plinth || "boulder";
+    const tier = spec.tier || 0;
+
+    // 1. SCENIC PLINTH BASE (Y = 6..24)
+    fillShellCylinder(64, 6, 16, 64, 34, 0, 5);
+    fillShellCylinder(64, 6, 10, 64, 36, 32, 10);
+    if (plinth === "boulder") {
+      fillEllipsoid(64, 17, 64, 28, 7, 26, 5);
+      fillEllipsoid(54, 19, 60, 12, 5, 12, 24);
+      fillEllipsoid(74, 18, 68, 10, 4, 10, 24);
+    } else if (plinth === "spire") {
+      fillShellBox(50, 14, 46, 78, 44, 54, 5);
+      // Runic carvings on stone
+      drawTaperedLimb(56, 20, 55, 72, 38, 55, 1.3, 1.3, 4);
+      drawTaperedLimb(72, 20, 55, 56, 38, 55, 1.3, 1.3, 4);
+    } else if (plinth === "lava") {
+      fillShellBox(44, 14, 48, 84, 20, 80, 19);
+      fillEllipsoid(56, 19, 64, 9, 4, 9, 23);
+      fillEllipsoid(72, 20, 60, 8, 5, 8, 23);
+    } else if (plinth === "anvil") {
+      fillShellBox(52, 15, 56, 76, 25, 72, 20);
+      drawTaperedLimb(46, 23, 64, 82, 23, 64, 4.5, 2.5, 21);
+    } else if (plinth === "smoke") {
+      // Viking Longship dragon prow base
+      drawTaperedLimb(42, 16, 64, 88, 28, 64, 8, 4, 19);
+      fillEllipsoid(89, 32, 64, 5, 5, 4, 22);
+    } else if (plinth === "ruins") {
+      fillShellCylinder(48, 14, 36, 54, 6, 0, 5);
+      fillShellCylinder(80, 14, 28, 54, 6, 0, 5);
+    }
+
+    // Pose Offsets
+    let bodyY = 20;
+    let leanZ = 0;
+    let strideZ = 4;
+    if (pose === "leap") { bodyY = 27; leanZ = 5; strideZ = 10; }
+    else if (pose === "hover") { bodyY = 28; strideZ = 2; }
+    else if (pose === "kneel") { bodyY = 15; strideZ = 8; }
+    else if (pose === "rock_perch") { bodyY = 23; strideZ = 5; }
+    else if (pose === "iaijutsu") { bodyY = 17; leanZ = 6; strideZ = 9; }
+    else if (pose === "strafe") { bodyY = 20; leanZ = 4; strideZ = 11; }
+
+    const hipY = bodyY + 26;
+    const chestY = hipY + 22;
+    const headY = chestY + 15;
+
+    // 2. LEGS & BOOTS (Anatomical Tapered Limbs + Leather Leg-Wraps)
+    const lFootX = 55, lFootY = bodyY, lFootZ = 64 + strideZ;
+    const rFootX = 73, rFootY = bodyY, rFootZ = 64 - strideZ;
+    const lKneeX = 54, lKneeY = bodyY + 13, lKneeZ = 64 + strideZ * 0.6 + 3;
+    const rKneeX = 74, rKneeY = bodyY + 13, rKneeZ = 64 - strideZ * 0.5 + 2;
+
+    // Thighs
+    drawTaperedLimb(57, hipY, 64, lKneeX, lKneeY, lKneeZ, 6.2, 4.8, 6);
+    drawTaperedLimb(71, hipY, 64, rKneeX, rKneeY, rKneeZ, 6.2, 4.8, 6);
+    // Shins & Winingas (Saxon leg bindings)
+    drawTaperedLimb(lKneeX, lKneeY, lKneeZ, lFootX, lFootY + 3, lFootZ, 4.6, 3.6, 2);
+    drawTaperedLimb(rKneeX, rKneeY, rKneeZ, rFootX, rFootY + 3, rFootZ, 4.6, 3.6, 2);
+    // Leather Turnshoes
+    fillEllipsoid(lFootX, lFootY + 2, lFootZ + 3, 4.5, 3.0, 6.5, 19);
+    fillEllipsoid(rFootX, rFootY + 2, rFootZ + 3, 4.5, 3.0, 6.5, 19);
+
+    // 3. TORSO, MAILLE BYRNIE & TUNIC SKIRT
+    // Tunic / Hauberk Skirt (Split for movement)
+    fillShellCylinder(64, hipY - 8, hipY + 4, 64, 14.5, 0, 1);
+    fillShellCylinder(64, hipY - 9, hipY - 6, 64, 15.2, 12.5, 3); // Embroidered border
+
+    // Main Torso Chest
+    drawTaperedLimb(64, hipY, 64, 64, chestY, 64 + leanZ, 12.5, 15.0, 1);
+
+    // War-Belt & Saxon Gold Buckle
+    fillShellCylinder(64, hipY - 1, hipY + 3, 64, 14.8, 11.5, 19);
+    fillShellBox(60, hipY - 1, 76, 68, hipY + 3, 80, 22);
+
+    // Armor Style Detailing
+    if (armor === "heavy" || armor === "standard") {
+      // Ring-maille shoulder mantle & chest reinforce
+      fillEllipsoid(64, chestY - 2, 64 + leanZ, 16.5, 7.5, 12.5, 2);
+      if (armor === "heavy") {
+        // Gilded Huscarl pectoral trim
+        fillShellCylinder(64, chestY - 6, chestY - 3, 64 + leanZ, 15.8, 13.5, 22);
+      }
+    } else if (armor === "samurai") {
+      // Birka Viking Lamellar plates
+      for (let band = 0; band < 3; band++) {
+        fillShellCylinder(64, hipY + 4 + band * 5, hipY + 7 + band * 5, 64 + leanZ * 0.5, 15.2, 12.0, 2);
+      }
+    } else if (armor === "fur") {
+      // Wolf-Pelt Ulfhednar shoulders
+      fillEllipsoid(64, chestY, 64 + leanZ - 2, 18.5, 8.5, 14.0, 18);
+    } else if (armor === "ronin" || armor === "skirmish") {
+      // Crossed leather baldric straps
+      drawTaperedLimb(52, chestY + 2, 74 + leanZ, 76, hipY + 2, 74, 2.2, 2.2, 19);
+    }
+
+    // Tier 6+ Royal Gold Torque / Brooches
+    if (tier >= 5) {
+      fillEllipsoid(55, chestY + 1, 75 + leanZ, 3.2, 3.2, 2.2, 22);
+      fillEllipsoid(73, chestY + 1, 75 + leanZ, 3.2, 3.2, 2.2, 22);
+    }
+
+    // 4. BACK RIGS (Cloaks, Banners, Slung Shields, Scabbards)
+    if (back === "cape" || tier >= 7) {
+      // Flowing Saxon/Norse Wool Cloak
+      for (let y = bodyY + 8; y <= chestY + 1; y++) {
+        const t = (chestY + 1 - y) / 36;
+        const w = 13 + t * 8;
+        const zBack = 53 - t * 8 + leanZ * 0.4;
+        drawTaperedLimb(64 - w, y, zBack, 64 + w, y, zBack, 2.4, 2.4, 3);
+      }
+    }
+    if (back === "both" || back === "jetpack") {
+      // Slung Round Boss Shield on back
+      drawRoundBossShield(64, chestY - 6, 50, 16, -1, 3, 1, 2);
+    }
+    if (back === "sashimono") {
+      // Tall Raven / Wyrm War-Banner Pole rising behind warrior
+      drawTaperedLimb(56, hipY, 50, 56, 118, 48, 2.0, 1.6, 19);
+      drawTaperedLimb(56, 115, 48, 86, 115, 48, 1.8, 1.5, 22);
+      fillShellBox(58, 86, 47, 84, 114, 49, 3);
+      fillEllipsoid(71, 100, 48, 6, 6, 2, 22); // Golden Wyrm emblem
+    }
+    if (back === "fly") {
+      // War-Quiver & Arrows on back
+      drawTaperedLimb(72, hipY + 6, 52, 76, chestY + 6, 50, 4.0, 4.5, 19);
+      fillEllipsoid(76, chestY + 9, 50, 4.2, 3.0, 4.2, 21);
+    }
+    if (back === "katanas") {
+      // Crossed Langseax Scabbards
+      drawTaperedLimb(50, hipY + 2, 52, 78, chestY + 4, 52, 2.5, 2.2, 19);
+      drawTaperedLimb(78, hipY + 2, 52, 50, chestY + 4, 52, 2.5, 2.2, 19);
+    }
+
+    // 5. HEAD, BEARD & HELMETS (10 Historical Patterns)
+    const hz = 64 + leanZ;
+    // Head & Jaw
+    fillEllipsoid(64, headY, hz, 8.2, 9.2, 8.5, 16);
+    // Braided Saxon Moustache / Viking Beard
+    fillEllipsoid(64, headY - 4, hz + 5, 6.8, 5.5, 4.8, 18);
+    drawTaperedLimb(60, headY - 5, hz + 7, 58, headY - 12, hz + 8, 2.4, 1.4, 18);
+    drawTaperedLimb(68, headY - 5, hz + 7, 70, headY - 12, hz + 8, 2.4, 1.4, 18);
+
+    // Maille Aventail / Coif Curtain around neck
+    fillShellCylinder(64, chestY + 2, headY - 2, hz, 9.5, 6.5, 20);
+
+    // Helmet Dome Base
+    fillEllipsoid(64, headY + 3, hz, 9.2, 8.5, 9.5, 2);
+    fillShellCylinder(64, headY + 1, headY + 3, hz, 9.6, 7.8, 22); // Brow band
+
+    if (helmet === "kabuto" || helmet === "spikes") {
+      // Coppergate Nasal Helm / Spangenhelm
+      fillShellBox(62, headY - 3, hz + 7, 66, headY + 4, hz + 10, 21); // Iron nasal bar
+      if (helmet === "spikes") {
+        drawTaperedLimb(64, headY + 9, hz, 64, headY + 17, hz, 3.0, 0.8, 21);
+      }
+    } else if (helmet === "tvisor") {
+      // Gjermundbu Viking Spectacle Helm
+      fillShellBox(56, headY - 1, hz + 7, 72, headY + 4, hz + 10, 21);
+      fillEllipsoid(59, headY + 1, hz + 9, 2.2, 1.8, 2.0, 20);
+      fillEllipsoid(69, headY + 1, hz + 9, 2.2, 1.8, 2.0, 20);
+    } else if (helmet === "oni" || helmet === "heavy") {
+      // Sutton Hoo Full Face-Mask Helm / Varangian Mask
+      fillEllipsoid(64, headY - 1, hz + 3, 8.8, 7.5, 8.5, 21);
+      fillShellBox(62, headY - 3, hz + 8, 66, headY + 6, hz + 11, 22); // Golden nose & crest
+      fillShellBox(56, headY + 2, hz + 8, 72, headY + 4, hz + 11, 22); // Golden eyebrows
+    } else if (helmet === "crest") {
+      // Benty Grange Anglo-Saxon Boar-Crest Helm
+      drawTaperedLimb(64, headY + 11, hz - 5, 64, headY + 13, hz + 6, 3.2, 3.8, 22);
+    } else if (helmet === "owl") {
+      // Raven-Winged Valkyrie Helm
+      drawTaperedLimb(54, headY + 4, hz + 2, 42, headY + 18, hz - 3, 3.2, 1.2, 21);
+      drawTaperedLimb(74, headY + 4, hz + 2, 86, headY + 18, hz - 3, 3.2, 1.2, 21);
+    } else if (helmet === "horns") {
+      // Ceremonial Curved Horns
+      drawTaperedLimb(55, headY + 5, hz, 43, headY + 17, hz + 5, 3.5, 1.1, 21);
+      drawTaperedLimb(73, headY + 5, hz, 85, headY + 17, hz + 5, 3.5, 1.1, 21);
+    } else if (helmet === "cowl") {
+      // Leather Hood over Maille Coif
+      fillEllipsoid(64, headY + 3, hz - 1, 10.2, 9.8, 10.5, 3);
+    }
+
+    // 6. ARMS, SHOULDERS, ROUND BOSS SHIELD & WEAPONS
+    const lShX = 47, lShY = chestY - 2, lShZ = hz;
+    const rShX = 81, rShY = chestY - 2, rShZ = hz;
+
+    // Pauldrons
+    fillEllipsoid(lShX, lShY + 2, lShZ, 6.5, 5.8, 6.5, 2);
+    fillEllipsoid(rShX, rShY + 2, rShZ, 6.5, 5.8, 6.5, 2);
+
+    // Left Arm (Shield / Secondary Hand)
+    const lHandX = 41, lHandY = chestY - 9, lHandZ = hz + 12;
+    drawTaperedLimb(lShX, lShY, lShZ, 43, chestY - 8, hz + 5, 4.8, 4.0, 1);
+    drawTaperedLimb(43, chestY - 8, hz + 5, lHandX, lHandY, lHandZ, 4.0, 3.4, 2);
+    fillEllipsoid(lHandX, lHandY, lHandZ, 3.6, 3.6, 3.6, 16);
+
+    // Right Arm (Weapon Hand - Raised or Braced by Pose)
+    let rHandX = 87, rHandY = chestY - 4, rHandZ = hz + 15;
+    if (pose === "leap" || pose === "hover") {
+      rHandX = 86; rHandY = chestY + 14; rHandZ = hz + 10;
+    } else if (pose === "iaijutsu") {
+      rHandX = 82; rHandY = hipY + 4; rHandZ = hz + 12;
+    }
+    drawTaperedLimb(rShX, rShY, rShZ, 85, chestY - 6, hz + 6, 4.8, 4.0, 1);
+    drawTaperedLimb(85, chestY - 6, hz + 6, rHandX, rHandY, rHandZ, 4.0, 3.4, 2);
+    fillEllipsoid(rHandX, rHandY, rHandZ, 3.6, 3.6, 3.6, 16);
+
+    // Left-Hand Linden Boss Shield (for Shieldwall / Spear / Broad-Axe classes)
+    if (weapon === "rotary" || weapon === "spear" || weapon === "darksaber" || weapon === "hammer") {
+      drawRoundBossShield(lHandX - 4, lHandY + 1, lHandZ + 2, 16, -1, 1, 3, 22);
+    } else if (weapon === "dual" || weapon === "blades") {
+      // Off-hand Axe or Seax in left hand
+      drawTaperedLimb(lHandX, lHandY - 8, lHandZ, lHandX, lHandY + 18, lHandZ + 6, 1.8, 1.8, 19);
+      fillShellBox(lHandX - 2, lHandY + 12, lHandZ + 5, lHandX + 2, lHandY + 21, lHandZ + 14, 4);
+    } else if (weapon === "pyro") {
+      // Blazing Pitch Torch in left hand
+      drawTaperedLimb(lHandX, lHandY - 4, lHandZ, lHandX - 4, lHandY + 16, lHandZ + 6, 2.0, 2.6, 19);
+      fillEllipsoid(lHandX - 4, lHandY + 21, lHandZ + 6, 5.0, 7.5, 5.0, 23);
+    }
+
+    // Right-Hand Primary Weapons (11 Authentic Saxon & Viking Arms)
+    if (weapon === "darksaber" || weapon === "pyro") {
+      // Runic Ulfberht Broadsword with Lobated Pommel & Crossguard
+      drawTaperedLimb(rHandX, rHandY - 6, rHandZ, rHandX, rHandY + 3, rHandZ, 2.0, 2.0, 19);
+      fillEllipsoid(rHandX, rHandY - 7, rHandZ, 3.5, 2.5, 3.5, 22); // Lobated pommel
+      drawTaperedLimb(rHandX - 7, rHandY + 3, rHandZ, rHandX + 7, rHandY + 3, rHandZ, 2.2, 2.2, 22); // Crossguard
+      // Broad fuller blade
+      for (let s = 4; s <= 38; s++) {
+        const w = Math.max(1.2, 3.4 - (s / 38) * 2.0);
+        fillEllipsoid(rHandX, rHandY + s, rHandZ + s * 0.15, 1.3, 1.3, w, 4);
+        if (s < 30 && s % 3 === 0) setVox(rHandX, rHandY + s, rHandZ + s * 0.15, 21); // Fuller rune gleam
+      }
+    } else if (weapon === "katana" || weapon === "blades") {
+      // Heavy Broken-Back Saxon Langseax
+      drawTaperedLimb(rHandX, rHandY - 5, rHandZ, rHandX, rHandY + 30, rHandZ + 8, 2.4, 1.4, 4);
+      drawTaperedLimb(rHandX, rHandY - 6, rHandZ, rHandX, rHandY + 2, rHandZ, 2.5, 2.5, 19);
+    } else if (weapon === "eweb" || weapon === "rotary" || weapon === "dual") {
+      // Two-Handed Huscarl Dane-Axe or Viking Beard-Axe
+      const len = weapon === "eweb" ? 44 : 28;
+      drawTaperedLimb(rHandX, rHandY - 12, rHandZ - 2, rHandX, rHandY + len, rHandZ + 6, 2.1, 1.9, 19);
+      // Swept Crescent Dane-Axe Head
+      const axeY = rHandY + len - 5;
+      const axeZ = rHandZ + 6;
+      for (let dy = -9; dy <= 7; dy++) {
+        const reach = 11 - Math.abs(dy - 1) * 0.55;
+        drawTaperedLimb(rHandX, axeY + dy * 0.5, axeZ, rHandX, axeY + dy, axeZ + reach, 1.8, 1.0, 4);
+        setVox(rHandX, Math.round(axeY + dy), Math.round(axeZ + reach), 21); // Honed silver edge
+      }
+    } else if (weapon === "spear" || weapon === "naginata") {
+      // Saxon Ash Winged Spear / Viking Atgeir Hewing Spear
+      drawTaperedLimb(rHandX, rHandY - 18, rHandZ - 4, rHandX, rHandY + 42, rHandZ + 8, 1.9, 1.7, 19);
+      // Lugged Winged Spearhead
+      drawTaperedLimb(rHandX - 5, rHandY + 38, rHandZ + 7, rHandX + 5, rHandY + 38, rHandZ + 7, 1.6, 1.6, 21);
+      drawTaperedLimb(rHandX, rHandY + 37, rHandZ + 7, rHandX, rHandY + 52, rHandZ + 10, 3.2, 0.8, 4);
+    } else if (weapon === "hammer") {
+      // Blacksmith War-Maul
+      drawTaperedLimb(rHandX, rHandY - 10, rHandZ, rHandX, rHandY + 28, rHandZ + 4, 2.1, 2.1, 19);
+      fillShellBox(rHandX - 5, rHandY + 24, rHandZ - 3, rHandX + 5, rHandY + 32, rHandZ + 12, 4);
+    } else if (weapon === "amban") {
+      // Longbow / Throwing Javelin
+      drawTaperedLimb(rHandX, rHandY - 16, rHandZ + 4, rHandX, rHandY + 26, rHandZ + 4, 1.8, 1.5, 19);
+      drawTaperedLimb(rHandX, rHandY + 4, rHandZ - 6, rHandX, rHandY + 4, rHandZ + 22, 1.6, 0.9, 4);
+    }
+  }
+
+  // Extract Isolated Read-Only SurfaceSnapshot Buffer with 26-Neighbor Normals & AO
+  function extractSurfaceSnapshot() {
+    // First pass: count surface voxels in bounding box
+    let count = 0;
+    const x0 = Math.max(1, minX), x1 = Math.min(126, maxX);
+    const y0 = Math.max(1, minY), y1 = Math.min(126, maxY);
+    const z0 = Math.max(1, minZ), z1 = Math.min(126, maxZ);
+
+    for (let y = y0; y <= y1; y++) {
+      for (let z = z0; z <= z1; z++) {
+        for (let x = x0; x <= x1; x++) {
+          const c = getVox(x, y, z);
+          if (!c) continue;
+          if (
+            !getVox(x + 1, y, z) || !getVox(x - 1, y, z) ||
+            !getVox(x, y + 1, z) || !getVox(x, y - 1, z) ||
+            !getVox(x, y, z + 1) || !getVox(x, y, z - 1)
+          ) {
+            count++;
+          }
+        }
+      }
+    }
+
+    const pos = new Uint32Array(count);
+    const col = new Uint32Array(count);
+    const norm = new Int8Array(count * 3);
+    const ao = new Uint8Array(count);
+
+    let ptr = 0;
+    for (let y = y0; y <= y1; y++) {
+      for (let z = z0; z <= z1; z++) {
+        for (let x = x0; x <= x1; x++) {
+          const c = getVox(x, y, z);
+          if (!c) continue;
+          if (
+            getVox(x + 1, y, z) && getVox(x - 1, y, z) &&
+            getVox(x, y + 1, z) && getVox(x, y - 1, z) &&
+            getVox(x, y, z + 1) && getVox(x, y, z - 1)
+          ) continue;
+
+          // 26-Neighbor Normal & Ambient Occlusion
+          let nx = 0, ny = 0, nz = 0, neighbors = 0;
+          for (let dy = -1; dy <= 1; dy++) {
+            for (let dz = -1; dz <= 1; dz++) {
+              for (let dx = -1; dx <= 1; dx++) {
+                if (dx === 0 && dy === 0 && dz === 0) continue;
+                if (getVox(x + dx, y + dy, z + dz)) {
+                  nx -= dx;
+                  ny -= dy;
+                  nz -= dz;
+                  neighbors++;
+                }
+              }
+            }
+          }
+          const len = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+          pos[ptr] = (y << 14) | (z << 7) | x;
+          col[ptr] = (paletteR[c] << 16) | (paletteG[c] << 8) | paletteB[c];
+          norm[ptr * 3] = Math.round((nx / len) * 120);
+          norm[ptr * 3 + 1] = Math.round((ny / len) * 120);
+          norm[ptr * 3 + 2] = Math.round((nz / len) * 120);
+          // AO factor (180..255)
+          ao[ptr] = Math.max(145, 255 - neighbors * 4);
+          ptr++;
+        }
+      }
+    }
+
+    return { pos, col, norm, ao, count };
+  }
+
+  // Z-Buffered Solid Overlapping Splat Renderer (Eliminates voxel dot gaps)
+  const MAX_CANVAS = 260 * 260;
+  const zBuf = new Float32Array(MAX_CANVAS);
+  const imgCache = new WeakMap();
+
+  function renderSnapshot(ctx, snapshot, yaw, pitch, zoom) {
+    if (!snapshot || !ctx) return;
+    const W = ctx.canvas.width;
+    const H = ctx.canvas.height;
+    const numPix = W * H;
+
+    let imgData = imgCache.get(ctx.canvas);
+    if (!imgData || imgData.width !== W || imgData.height !== H) {
+      imgData = ctx.createImageData(W, H);
+      imgCache.set(ctx.canvas, imgData);
+    }
+    const buf32 = new Uint32Array(imgData.data.buffer);
+    buf32.fill(0x00000000);
+    for (let i = 0; i < numPix; i++) zBuf[i] = -99999;
+
+    const cy = Math.cos(yaw), sy = Math.sin(yaw);
+    const cp = Math.cos(pitch), sp = Math.sin(pitch);
+
+    const scale = (W / 122) * zoom;
+    // Solid overlapping splat radius so sculpts look completely solid with zero dot gaps
+    const splatR = Math.max(1, Math.min(3, Math.ceil(scale * 0.78)));
+
+    const halfW = W * 0.5;
+    const halfH = H * 0.54;
+
+    // Directional Sun + Specular Rim Light
+    const lx = 0.48, ly = 0.68, lz = 0.55;
+
+    const { pos, col, norm, ao, count } = snapshot;
+    for (let i = 0; i < count; i++) {
+      const p = pos[i];
+      const vx = (p & 127) - 64;
+      const vz = ((p >> 7) & 127) - 64;
+      const vy = ((p >> 14) & 127) - 62;
+
+      // Rotate Yaw (Y) then Pitch (X)
+      const rx = vx * cy + vz * sy;
+      const rz1 = -vx * sy + vz * cy;
+      const ry = vy * cp - rz1 * sp;
+      const rz = vy * sp + rz1 * cp;
+
+      const sx = (halfW + rx * scale) | 0;
+      const sy2 = (halfH - ry * scale) | 0;
+      if (sx < splatR || sx >= W - splatR || sy2 < splatR || sy2 >= H - splatR) continue;
+
+      // Rotate Normal for dynamic shading
+      const nIdx = i * 3;
+      const nvx = norm[nIdx] / 120;
+      const nvy = norm[nIdx + 1] / 120;
+      const nvz = norm[nIdx + 2] / 120;
+
+      const rnx = nvx * cy + nvz * sy;
+      const rnz1 = -nvx * sy + nvz * cy;
+      const rny = nvy * cp - rnz1 * sp;
+      const rnz = nvy * sp + rnz1 * cp;
+
+      const ndotl = Math.max(0, rnx * lx + rny * ly + rnz * lz);
+      const spec = ndotl > 0.75 ? Math.pow(ndotl, 8) * 38 : 0;
+      const shade = (0.52 + 0.48 * ndotl) * (ao[i] / 255);
+
+      const rgb = col[i];
+      const r = Math.min(255, ((rgb >> 16) & 255) * shade + spec) | 0;
+      const g = Math.min(255, ((rgb >> 8) & 255) * shade + spec) | 0;
+      const b = Math.min(255, (rgb & 255) * shade + spec) | 0;
+      const abgr = (255 << 24) | (b << 16) | (g << 8) | r;
+
+      // Solid overlapping splat fill
+      for (let dy = -splatR; dy <= splatR; dy++) {
+        const rowOffset = (sy2 + dy) * W + sx;
+        for (let dx = -splatR; dx <= splatR; dx++) {
+          const pIdx = rowOffset + dx;
+          if (rz > zBuf[pIdx]) {
+            zBuf[pIdx] = rz;
+            buf32[pIdx] = abgr;
+          }
+        }
+      }
+    }
+
+    ctx.putImageData(imgData, 0, 0);
+  }
+
+  // Offscreen Thumbnail Baker (Does not disturb Forge or Inspector SurfaceSnapshot!)
+  let thumbCanvas = null;
+  let thumbCtx = null;
+
+  function bakeThumbnailDataURL(spec) {
+    if (!thumbCanvas) {
+      thumbCanvas = document.createElement("canvas");
+      thumbCanvas.width = 116;
+      thumbCanvas.height = 116;
+      thumbCtx = thumbCanvas.getContext("2d");
+    }
+    buildMiniatureToKernel(spec);
+    const snap = extractSurfaceSnapshot();
+    renderSnapshot(thumbCtx, snap, 0.55, 0.22, 1.05);
+    return thumbCanvas.toDataURL("image/png");
+  }
+
+  return {
+    buildMiniatureToKernel,
+    extractSurfaceSnapshot,
+    renderSnapshot,
+    bakeThumbnailDataURL
+  };
+})();
+
+/* ============================================================================
+   3. GAME STATE, 6-TAB ENGINE & LIVE LOOPS
+   ============================================================================ */
+const Game = (() => {
+  const SAVE_KEY = "SAXON_DANE_VOXEL_128_V1";
+
+  const State = {
+    credits: 500,
+    supply: 1000,
+    godMode: false,
+    units: [],
+    pilots: [],
+    codex: {},
+    tech: { atk: 0, hp: 0, supply: 0, spoils: 0 },
+    auto: { march: false, repair: false, supply: false },
+    stats: {
+      totalCollected: 0,
+      totalForged: 0,
+      totalAuctions: 0,
+      totalBattlesWon: 0,
+      totalPatrolTicks: 0
+    },
+    claimedMilestones: {},
+    commissions: [],
+    sellerLanes: [null, null, null, null, null],
+    nextUid: 1
+  };
+
+  // Runtime caches (Never saved to localStorage)
+  const thumbCache = new Map();
+  let activeTab = 1;
+  let forgeSnapshot = null;
+  let forgeYaw = 0.55, forgePitch = 0.2, forgeZoomVal = 1.08, forgeAutoSpin = true;
+  let inspSnapshot = null;
+  let inspYaw = 0.55, inspPitch = 0.2, inspZoomVal = 1.1, inspOpen = false;
+  let forgeColors = ["#8b1e1e", "#d4af37", "#f59e0b", "#d8e0ec", "#4b5563"];
+  let activeMilestoneBook = 0;
+
+  // Buyer Auction State (Tab 4 Top)
+  const BuyerLot = {
+    unit: null,
+    thumb: "",
+    estValue: 100,
+    currentBid: 15,
+    highBidder: "NPC",
+    rivalName: "Mercian Reeve",
+    timer: 10.0,
+    intermission: 0,
+    verdictText: "",
+    rivalStunUntil: 0
+  };
+
+  // Battle Arena State (Tab 5)
+  let battleMode = 1; // 1, 3, or 5
+  let playerSquadIds = [];
+  let enemyHost = [];
+
+  /* --------------------------------------------------------------------------
+     COLLECTOR UNIT FACTORY & BASE36 TRADE CODEC
+     -------------------------------------------------------------------------- */
+  function computeDexNum(tier, faction, cls) {
+    return (tier * 100) + (faction * 10) + cls + 1;
+  }
+
+  function decodeDexNum(dexNum) {
+    const idx = Math.max(0, Math.min(999, (dexNum | 0) - 1));
+    const tier = Math.floor(idx / 100);
+    const faction = Math.floor((idx % 100) / 10);
+    const cls = idx % 10;
+    return { tier, faction, cls };
+  }
+
+  function createCollectorUnit(dexNum, opts = {}) {
+    const { tier, faction, cls } = decodeDexNum(dexNum);
+    const tDef = TIERS[tier];
+    const fDef = FACTIONS[faction];
+    const cDef = CLASSES[cls];
+
+    const craftMult = opts.craftMult || 1.0;
+    const craftLabel = opts.craftLabel || "Standard Issue";
+    const maxHp = Math.round(tDef.hp * (1 + State.tech.hp * 0.1) * Math.sqrt(craftMult));
+    const atk = Math.round(tDef.atk * (1 + State.tech.atk * 0.08) * Math.sqrt(craftMult));
+    const value = Math.max(5, Math.round(tDef.baseVal * craftMult));
+
+    return {
+      uid: "u_" + (State.nextUid++) + "_" + Date.now().toString(36),
+      dexNum,
+      tier,
+      faction,
+      cls,
+      name: opts.name || `${fDef.name.split(" ")[0]} ${cDef.name}`,
+      isCustom: !!opts.isCustom,
+      craftMult,
+      craftLabel,
+      value,
+      hp: maxHp,
+      maxHp,
+      atk,
+      role: cDef.role,
+      pose: opts.pose || cDef.pose,
+      armor: opts.armor || cDef.armor,
+      helmet: opts.helmet || cDef.helmet,
+      weapon: opts.weapon || cDef.weapon,
+      back: opts.back || cDef.back,
+      plinth: opts.plinth || cDef.plinth,
+      colors: opts.colors ? [...opts.colors] : [...fDef.palette],
+      vaulted: false,
+      pilotId: null,
+      patrolId: null
+    };
+  }
+
+  function getUnitThumbnail(unit) {
+    const key = unit.isCustom
+      ? `${unit.uid}_${unit.colors.join("")}_${unit.pose}_${unit.helmet}_${unit.weapon}`
+      : `dex_${unit.dexNum}`;
+    if (!thumbCache.has(key)) {
+      thumbCache.set(key, VoxelKernel.bakeThumbnailDataURL(unit));
+    }
+    return thumbCache.get(key);
+  }
+
+  function addUnitToInventory(unit) {
+    State.units.unshift(unit);
+    State.codex[unit.dexNum] = true;
+    State.stats.totalCollected++;
+    updateHUD();
+  }
+
+  function exportUnitTradeCode(unit) {
+    if (!unit.isCustom) {
+      return `WF-${unit.dexNum.toString(36).toUpperCase()}`;
+    }
+    const hexStr = unit.colors.map(c => c.replace("#", "").toUpperCase()).join("-");
+    return `WFC-${unit.tier.toString(36).toUpperCase()}${unit.cls.toString(36).toUpperCase()}-${hexStr}`;
+  }
+
+  function redeemTradeCode() {
+    const inp = document.getElementById("trade-code-input");
+    const raw = (inp.value || "").trim().toUpperCase();
+    if (!raw) return showToast("⚠️ Enter a valid Base36 Trade or Promo Code!");
+    processCodeString(raw);
+    inp.value = "";
+  }
+
+  function quickCode(code) {
+    processCodeString(code);
+  }
+
+  function processCodeString(raw) {
+    if (raw === "ALFRED-878") {
+      State.credits += 2500;
+      const u = createCollectorUnit(computeDexNum(5, 0, 2), { name: "King Alfred's Royal Thegn", craftMult: 2.5, craftLabel: "Journeyman (2.5x)" });
+      addUnitToInventory(u);
+      renderInventory();
+      return showToast("👑 Redeemed ALFRED-878: +◈2,500 & Wessex Royal Thegn!");
+    }
+    if (raw === "DANELAW-YORK") {
+      State.supply += 1500;
+      const u = createCollectorUnit(computeDexNum(5, 8, 6), { name: "Jorvik Blood-Axe Berserker", craftMult: 2.8, craftLabel: "Journeyman (2.8x)" });
+      addUnitToInventory(u);
+      renderInventory();
+      return showToast("🐺 Redeemed DANELAW-YORK: +1,500 Supply & Jorvik Berserker!");
+    }
+    if (raw === "SUTTON-HOO") {
+      const u = createCollectorUnit(computeDexNum(7, 3, 3), {
+        name: "Raedwald's Sutton Hoo Champion",
+        isCustom: true,
+        helmet: "oni",
+        armor: "heavy",
+        weapon: "darksaber",
+        craftMult: 12.0,
+        craftLabel: "Relic (12.0x)"
+      });
+      addUnitToInventory(u);
+      renderInventory();
+      return showToast("🪖 Redeemed SUTTON-HOO: T8 Relic Champion Unlocked!");
+    }
+    if (raw === "ULFBERHT-STEEL") {
+      const u = createCollectorUnit(computeDexNum(6, 7, 0), {
+        name: "Jomsborg Ulfberht Huscarl",
+        isCustom: true,
+        colors: ["#18181b", "#f5b041", "#991b1b", "#ffffff", "#334155"],
+        craftMult: 6.5,
+        craftLabel: "Artisan (6.5x)"
+      });
+      addUnitToInventory(u);
+      renderInventory();
+      return showToast("⚔️ Redeemed ULFBERHT-STEEL: Custom Runic Huscarl Added!");
+    }
+
+    if (raw.startsWith("WF-")) {
+      const dex = parseInt(raw.slice(3), 36);
+      if (isNaN(dex) || dex < 1 || dex > 1000) return showToast("⚠️ Invalid WF Collector Code (#0001–#1000)!");
+      const u = createCollectorUnit(dex);
+      addUnitToInventory(u);
+      renderInventory();
+      return showToast(`📥 Imported Collector #${String(dex).padStart(4, "0")} ${u.name}!`);
+    }
+
+    if (raw.startsWith("WFC-")) {
+      const parts = raw.split("-");
+      if (parts.length < 7) return showToast("⚠️ Malformed WFC Custom Paint Code!");
+      const tc = parts[1];
+      const tier = Math.max(0, Math.min(9, parseInt(tc[0] || "0", 36) || 0));
+      const cls = Math.max(0, Math.min(9, parseInt(tc[1] || "0", 36) || 0));
+      const colors = parts.slice(2, 7).map(h => "#" + h.slice(0, 6).padEnd(6, "8"));
+      const dex = computeDexNum(tier, 0, cls);
+      const u = createCollectorUnit(dex, {
+        isCustom: true,
+        colors,
+        craftMult: 3.5,
+        craftLabel: "Imported Artisan (3.5x)"
+      });
+      addUnitToInventory(u);
+      renderInventory();
+      return showToast(`🎨 Imported Custom Painted ${u.name}!`);
+    }
+
+    if (raw.startsWith("CMD-")) {
+      const p = createCommander(Math.floor(Math.random() * 4) + 2);
+      State.pilots.push(p);
+      renderInventory();
+      return showToast(`👑 Imported Commander ${p.name}!`);
+    }
+
+    showToast("⚠️ Unrecognized Runic Trade Code.");
+  }
+
+  /* --------------------------------------------------------------------------
+     HUD, GOD MODE & SAVE / LOAD (THUMBNAIL-STRIPPED)
+     -------------------------------------------------------------------------- */
+  function fmtNum(n) {
+    return Math.round(n).toLocaleString("en-US");
+  }
+
+  function updateHUD() {
+    document.getElementById("hud-credits").textContent = "◈" + fmtNum(State.credits);
+    document.getElementById("hud-supply").textContent = fmtNum(State.supply);
+    document.getElementById("hud-owned").textContent = fmtNum(State.units.length);
+    const codexCount = Object.keys(State.codex).length;
+    document.getElementById("hud-codex").textContent = `${codexCount}/1000`;
+    const trialsCount = Object.keys(State.claimedMilestones).length;
+    document.getElementById("hud-trials").textContent = `${trialsCount}/150`;
+
+    const godBtn = document.getElementById("btn-god");
+    godBtn.textContent = State.godMode ? "⚡ GOD: ON" : "⚡ GOD: OFF";
+    godBtn.classList.toggle("god-on", State.godMode);
+  }
+
+  function toggleGodMode() {
+    State.godMode = !State.godMode;
+    if (State.godMode) {
+      State.credits += 10000000;
+      State.supply += 100000;
+      State.tech.atk = Math.max(State.tech.atk, 25);
+      State.tech.hp = Math.max(State.tech.hp, 25);
+      State.tech.supply = Math.max(State.tech.supply, 10);
+      State.tech.spoils = Math.max(State.tech.spoils, 25);
+      showToast("⚡ GOD MODE ENGAGED: +◈10M, +100K Supply, Max Tech & 100% ★ MASTERWORK ★ Forge Rolls!");
+    } else {
+      showToast("⚡ GOD MODE Disabled.");
+    }
+    updateHUD();
+    renderInventory();
+    updateForgeCostBanner();
+  }
+
+  function saveGame(manual = false) {
+    try {
+      const cleanPayload = {
+        credits: State.credits,
+        supply: State.supply,
+        godMode: State.godMode,
+        units: State.units,
+        pilots: State.pilots,
+        codex: State.codex,
+        tech: State.tech,
+        auto: State.auto,
+        stats: State.stats,
+        claimedMilestones: State.claimedMilestones,
+        nextUid: State.nextUid
+      };
+      localStorage.setItem(SAVE_KEY, JSON.stringify(cleanPayload));
+      if (manual) showToast("💾 Royal Chronicle Saved to LocalStorage!");
+    } catch (e) {
+      if (manual) showToast("⚠️ Storage quota warning: old thumbnails stripped.");
+    }
+  }
+
+  function loadGame() {
+    try {
+      const raw = localStorage.getItem(SAVE_KEY);
+      if (!raw) return false;
+      const data = JSON.parse(raw);
+      Object.assign(State, data);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function switchTab(tabNum) {
+    activeTab = tabNum;
+    document.querySelectorAll(".nav-tab").forEach(btn => {
+      btn.classList.toggle("active", Number(btn.dataset.tab) === tabNum);
+    });
+    document.querySelectorAll(".tab-view").forEach((sec, idx) => {
+      sec.classList.toggle("active", idx + 1 === tabNum);
+    });
+
+    if (tabNum === 1) renderInventory();
+    if (tabNum === 2) {
+      updateForgeCostBanner();
+      if (!forgeSnapshot) rebuildForgeVoxel();
+    }
+    if (tabNum === 4) {
+      populateSellerDropdown();
+      renderSellerLanes();
+    }
+    if (tabNum === 5) {
+      renderBattleArena();
+      renderPatrols();
+    }
+    if (tabNum === 6) {
+      renderHighCommand();
+    }
+  }
+
+  /* --------------------------------------------------------------------------
+     TAB 1: OWNED WARRIORS, ARMORY TECH & COMMANDERS
+     -------------------------------------------------------------------------- */
+  function renderInventory() {
+    updateHUD();
+    const vaultOnly = document.getElementById("flt-vault").checked;
+    const tierFlt = document.getElementById("flt-tier").value;
+    const classFlt = document.getElementById("flt-class").value;
+    const sortMode = document.getElementById("flt-sort").value;
+
+    let list = State.units.filter(u => {
+      if (vaultOnly && !u.vaulted) return false;
+      if (tierFlt !== "all" && u.tier !== Number(tierFlt)) return false;
+      if (classFlt !== "all" && u.cls !== Number(classFlt)) return false;
+      return true;
+    });
+
+    if (sortMode === "val_desc") list.sort((a, b) => b.value - a.value);
+    else if (sortMode === "tier_desc") list.sort((a, b) => b.tier - a.tier || b.value - a.value);
+    else if (sortMode === "dex_asc") list.sort((a, b) => a.dexNum - b.dexNum);
+    else if (sortMode === "hp_asc") list.sort((a, b) => (a.hp / a.maxHp) - (b.hp / b.maxHp));
+
+    const grid = document.getElementById("inventory-grid");
+    if (list.length === 0) {
+      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:18px;color:var(--silver-dim);">No warriors match current filter. Forge in Tab 2, Unbox in Tab 3, or Bid in Tab 4!</div>`;
+    } else {
+      const cardsHtml = list.slice(0, 60).map(u => {
+        const tDef = TIERS[u.tier];
+        const fDef = FACTIONS[u.faction];
+        const cDef = CLASSES[u.cls];
+        const hpPct = Math.round((u.hp / u.maxHp) * 100);
+        const isMW = u.craftMult >= 25;
+        const thumb = getUnitThumbnail(u);
+
+        const pilotOpts = [`<option value="">👑 No Commander</option>`].concat(
+          State.pilots.map(p => `<option value="${p.id}" ${u.pilotId === p.id ? "selected" : ""}>👑 ${p.name} (+${p.bonus}%)</option>`)
+        ).join("");
+
+        const patrolOpts = [`<option value="">🧭 No Patrol</option>`].concat(
+          PATROL_SECTORS.map(s => `<option value="${s.id}" ${u.patrolId === s.id ? "selected" : ""}>🧭 ${s.name}</option>`)
+        ).join("");
+
+        return `
+          <div class="unit-card ${isMW ? "masterwork" : ""}">
+            <div class="unit-thumb-wrap" onclick="Game.openInspector('${u.uid}')">
+              <img src="${thumb}" alt="${u.name}">
+              <span class="badge-tier" style="color:${tDef.color};">${tDef.code}</span>
+              <span class="badge-dex">#${String(u.dexNum).padStart(4, "0")}</span>
+              ${u.craftMult > 1 ? `<span class="badge-craft">${u.craftLabel}</span>` : ""}
+            </div>
+            <div style="font-size:11px;font-weight:900;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+              ${u.vaulted ? "🔒 " : ""}${u.name}
+            </div>
+            <div style="font-size:9.5px;color:var(--silver-dim);display:flex;justify-content:space-between;">
+              <span>${fDef.name.split(" ")[0]} • ${cDef.name}</span>
+              <span style="color:var(--gold);font-weight:800;">◈${fmtNum(u.value)}</span>
+            </div>
+            <div class="hp-bar-outer">
+              <div class="hp-bar-inner" style="width:${hpPct}%;background:${hpPct < 40 ? "var(--crimson)" : "var(--emerald)"};"></div>
+            </div>
+            <div style="font-size:9px;color:var(--silver);display:flex;justify-content:space-between;">
+              <span>❤️ ${u.hp}/${u.maxHp}</span>
+              <span>⚔️ ATK ${u.atk} [${u.role}]</span>
+            </div>
+            <select onchange="Game.assignPilot('${u.uid}', this.value)" style="font-size:9.5px;padding:2px 4px;">${pilotOpts}</select>
+            <select onchange="Game.assignPatrol('${u.uid}', this.value)" style="font-size:9.5px;padding:2px 4px;">${patrolOpts}</select>
+            <div class="grid-2" style="gap:3px;margin-top:2px;">
+              <button class="micro-btn" onclick="Game.quickAuctionUnit('${u.uid}')">🔨 Auction</button>
+              <button class="micro-btn" onclick="Game.toggleVaultUnit('${u.uid}')">${u.vaulted ? "🔓 Unvault" : "🔒 Vault"}</button>
+              <button class="micro-btn" onclick="Game.repairUnit('${u.uid}')">🔧 Repair</button>
+              <button class="micro-btn" onclick="Game.salvageUnit('${u.uid}')">♻️ Salvage</button>
+            </div>
+          </div>
+        `;
+      });
+      grid.innerHTML = cardsHtml.join("");
+    }
+
+    renderArmoryTech();
+    renderPilotsRoster();
+  }
+
+  function renderArmoryTech() {
+    const html = TECH_DEFS.map(t => {
+      const lv = State.tech[t.id] || 0;
+      const cost = Math.round(t.baseCost * Math.pow(1.55, lv));
+      return `
+        <div class="unit-card">
+          <div style="font-size:11px;font-weight:900;color:var(--white);">${t.name} <span style="color:var(--gold);">Lv.${lv}</span></div>
+          <div style="font-size:9.5px;color:var(--silver-dim);min-height:26px;">${t.desc}</div>
+          <button class="btn btn-gold" onclick="Game.upgradeTech('${t.id}')">⬆️ Upgrade (◈${fmtNum(cost)})</button>
+        </div>
+      `;
+    });
+    document.getElementById("armory-tech-grid").innerHTML = html.join("");
+  }
+
+  function upgradeTech(id) {
+    const def = TECH_DEFS.find(t => t.id === id);
+    if (!def) return;
+    const lv = State.tech[id] || 0;
+    const cost = Math.round(def.baseCost * Math.pow(1.55, lv));
+    if (State.credits < cost) return showToast("⚠️ Insufficient Credits for Armory Tech Upgrade!");
+    State.credits -= cost;
+    State.tech[id] = lv + 1;
+    showToast(`⚒️ Upgraded ${def.name} to Lv.${State.tech[id]}!`);
+    renderInventory();
+  }
+
+  function renderPilotsRoster() {
+    document.getElementById("pilot-count-lbl").textContent = `${State.pilots.length} Commanders`;
+    const grid = document.getElementById("pilots-grid");
+    if (State.pilots.length === 0) {
+      grid.innerHTML = `<div style="grid-column:1/-1;font-size:10px;color:var(--silver-dim);padding:8px;">No Commanders recruited yet. Recruit Ealdormen &amp; Jarls in Tab 3!</div>`;
+      return;
+    }
+    const html = State.pilots.map(p => {
+      const assigned = State.units.find(u => u.pilotId === p.id);
+      return `
+        <div class="unit-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-weight:900;color:var(--gold);">👑 ${p.name}</span>
+            <span style="font-size:9px;color:var(--emerald);font-weight:800;">+${p.bonus}% All Stats</span>
+          </div>
+          <div style="font-size:9.5px;color:var(--silver-dim);">${p.title} • ${p.trait}</div>
+          <div style="font-size:9.5px;color:var(--white);">Assigned: <b>${assigned ? assigned.name : "Unassigned"}</b></div>
+          <div style="font-size:8.5px;color:var(--silver-dim);font-family:monospace;">Code: CMD-${p.id.slice(-4).toUpperCase()}</div>
+        </div>
+      `;
+    });
+    grid.innerHTML = html.join("");
+  }
+
+  function assignPilot(uid, pilotId) {
+    const unit = State.units.find(u => u.uid === uid);
+    if (!unit) return;
+    if (pilotId) {
+      State.units.forEach(u => { if (u.pilotId === pilotId) u.pilotId = null; });
+    }
+    unit.pilotId = pilotId || null;
+    renderInventory();
+  }
+
+  function assignPatrol(uid, sectorVal) {
+    const unit = State.units.find(u => u.uid === uid);
+    if (!unit) return;
+    unit.patrolId = sectorVal === "" ? null : Number(sectorVal);
+    renderInventory();
+  }
+
+  function toggleVaultUnit(uid) {
+    const unit = State.units.find(u => u.uid === uid);
+    if (!unit) return;
+    unit.vaulted = !unit.vaulted;
+    renderInventory();
+  }
+
+  function repairUnit(uid) {
+    const unit = State.units.find(u => u.uid === uid);
+    if (!unit) return;
+    if (unit.hp >= unit.maxHp) return showToast("🛡️ Warrior is already at full strength!");
+    const disc = Math.max(0.3, 1 - State.tech.supply * 0.06);
+    const supCost = Math.max(2, Math.round((unit.maxHp - unit.hp) * 0.25 * disc));
+    if (State.supply < supCost) return showToast(`⚠️ Need ${supCost} Supply to repair ${unit.name}!`);
+    State.supply -= supCost;
+    unit.hp = unit.maxHp;
+    renderInventory();
+    showToast(`🔧 Repaired ${unit.name} (-${supCost} Supply)`);
+  }
+
+  function repairAllUnits() {
+    let totalSup = 0;
+    const disc = Math.max(0.3, 1 - State.tech.supply * 0.06);
+    State.units.forEach(u => {
+      if (u.hp < u.maxHp) {
+        const cost = Math.max(1, Math.round((u.maxHp - u.hp) * 0.25 * disc));
+        if (State.supply >= cost) {
+          State.supply -= cost;
+          u.hp = u.maxHp;
+          totalSup += cost;
+        }
+      }
+    });
+    renderInventory();
+    showToast(totalSup > 0 ? `🔧 Repaired Fyrd Garrison (-${fmtNum(totalSup)} Supply)!` : "🛡️ All Warriors are already at 100% HP!");
+  }
+
+  function salvageUnit(uid) {
+    const idx = State.units.findIndex(u => u.uid === uid);
+    if (idx === -1) return;
+    const u = State.units[idx];
+    if (u.vaulted) return showToast("🔒 Unvault warrior before salvaging!");
+    if (State.units.length <= 1) return showToast("⚠️ Keep at least 1 warrior in your garrison!");
+    const credGain = Math.max(3, Math.round(u.value * 0.55));
+    const supGain = Math.max(10, (u.tier + 1) * 25);
+    State.units.splice(idx, 1);
+    State.credits += credGain;
+    State.supply += supGain;
+    renderInventory();
+    showToast(`♻️ Salvaged ${u.name} for +◈${fmtNum(credGain)} & +${supGain} Supply!`);
+  }
+
+  function quickAuctionUnit(uid) {
+    const unit = State.units.find(u => u.uid === uid);
+    if (!unit) return;
+    if (unit.vaulted) return showToast("🔒 Unvault warrior before listing on Seller Syndicate!");
+    const openIdx = State.sellerLanes.findIndex(l => l === null);
+    if (openIdx === -1) {
+      switchTab(4);
+      return showToast("⚠️ All 5 Syndicate Seller Lanes are currently full!");
+    }
+    startSellerLane(openIdx, uid);
+    switchTab(4);
+  }
+
+  /* --------------------------------------------------------------------------
+     TAB 2: CUSTOM FORGE & 5-ZONE #RRGGBB HEX PAINT STUDIO
+     -------------------------------------------------------------------------- */
+  function initForgeControls() {
+    const fillSelect = (id, arr, labelFn) => {
+      const el = document.getElementById(id);
+      el.innerHTML = arr.map((item, idx) => `<option value="${item.id !== undefined ? item.id : idx}">${labelFn(item, idx)}</option>`).join("");
+    };
+
+    fillSelect("fg-tier", TIERS, t => `${t.code}: ${t.name} (Base ◈${fmtNum(t.baseVal)})`);
+    fillSelect("fg-faction", FACTIONS, f => f.name);
+    fillSelect("fg-class", CLASSES, c => `${c.name} [${c.role}]`);
+    fillSelect("fg-pose", POSES, p => p.name);
+    fillSelect("fg-armor", ARMORS, a => a.name);
+    fillSelect("fg-helmet", HELMETS, h => h.name);
+    fillSelect("fg-weapon", WEAPONS, w => w.name);
+    fillSelect("fg-back", BACK_RIGS, b => b.name);
+    fillSelect("fg-plinth", PLINTHS, p => p.name);
+
+    // Also populate Tab 1 class filter
+    const clsFlt = document.getElementById("flt-class");
+    clsFlt.innerHTML = `<option value="all">All 10 Heroic Classes</option>` +
+      CLASSES.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
+
+    renderPaintStudio();
+  }
+
+  function renderPaintStudio() {
+    const container = document.getElementById("paint-zones-container");
+    const rowsHtml = ZONE_LABELS.map((lbl, zIdx) => {
+      const hex = forgeColors[zIdx];
+      const swatchesHtml = SWATCHES.map(sw =>
+        `<div class="swatch-btn" style="background:${sw};" onclick="Game.setZoneColor(${zIdx}, '${sw}')"></div>`
+      ).join("");
+
+      return `
+        <div class="paint-zone-row">
+          <div class="paint-zone-top">
+            <span style="font-size:10px;font-weight:800;color:var(--white);">${lbl}</span>
+            <div style="display:flex;align-items:center;gap:4px;">
+              <input type="text" id="hex-txt-${zIdx}" value="${hex}" maxlength="7" style="width:74px;font-family:monospace;text-transform:uppercase;" onchange="Game.setZoneColor(${zIdx}, this.value)">
+              <input type="color" id="hex-pick-${zIdx}" value="${hex}" style="width:28px;height:22px;border:none;background:none;cursor:pointer;" oninput="Game.setZoneColor(${zIdx}, this.value)">
+            </div>
+          </div>
+          <div class="swatch-row">${swatchesHtml}</div>
+        </div>
+      `;
+    });
+    container.innerHTML = rowsHtml.join("");
+  }
+
+  function setZoneColor(zIdx, val) {
+    let clean = String(val || "").trim();
+    if (!clean.startsWith("#")) clean = "#" + clean;
+    if (!/^#[0-9A-Fa-f]{6}$/.test(clean)) return;
+    forgeColors[zIdx] = clean.toUpperCase();
+    const txt = document.getElementById(`hex-txt-${zIdx}`);
+    const pick = document.getElementById(`hex-pick-${zIdx}`);
+    if (txt) txt.value = forgeColors[zIdx];
+    if (pick) pick.value = forgeColors[zIdx];
+    rebuildForgeVoxel();
+  }
+
+  function getCurrentForgeSpec() {
+    return {
+      tier: Number(document.getElementById("fg-tier").value || 0),
+      faction: Number(document.getElementById("fg-faction").value || 0),
+      cls: Number(document.getElementById("fg-class").value || 0),
+      pose: document.getElementById("fg-pose").value || "heroic",
+      armor: document.getElementById("fg-armor").value || "heavy",
+      helmet: document.getElementById("fg-helmet").value || "kabuto",
+      weapon: document.getElementById("fg-weapon").value || "rotary",
+      back: document.getElementById("fg-back").value || "both",
+      plinth: document.getElementById("fg-plinth").value || "boulder",
+      colors: [...forgeColors]
+    };
+  }
+
+  function updateForgeCostBanner() {
+    const tier = Number(document.getElementById("fg-tier")?.value || 0);
+    const tDef = TIERS[tier];
+    const disc = Math.max(0.3, 1 - State.tech.supply * 0.06);
+    const credCost = Math.max(5, Math.round(tDef.baseVal * 0.5));
+    const supCost = Math.max(15, Math.round((tier + 1) * 45 * disc));
+    const btn = document.getElementById("btn-forge-craft");
+    if (btn) {
+      btn.textContent = `⚒️ FORGE & APPRAISE (◈${fmtNum(credCost)} + ${fmtNum(supCost)} Supply)`;
+    }
+    const prev = document.getElementById("forge-appraisal-preview");
+    if (prev) {
+      prev.textContent = State.godMode
+        ? `⚡ GOD MODE GUARANTEED: ★ MASTERWORK (25x–50x Value) ★`
+        : `Base Value: ◈${fmtNum(tDef.baseVal)} • Potential Masterwork: up to ◈${fmtNum(tDef.baseVal * 50)}`;
+    }
+  }
+
+  function rebuildForgeVoxel() {
+    const spec = getCurrentForgeSpec();
+    VoxelKernel.buildMiniatureToKernel(spec);
+    forgeSnapshot = VoxelKernel.extractSurfaceSnapshot();
+    updateForgeCostBanner();
+  }
+
+  function randomizeForge() {
+    const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+    document.getElementById("fg-faction").value = Math.floor(Math.random() * 10);
+    document.getElementById("fg-class").value = Math.floor(Math.random() * 10);
+    document.getElementById("fg-pose").value = pick(POSES).id;
+    document.getElementById("fg-armor").value = pick(ARMORS).id;
+    document.getElementById("fg-helmet").value = pick(HELMETS).id;
+    document.getElementById("fg-weapon").value = pick(WEAPONS).id;
+    document.getElementById("fg-back").value = pick(BACK_RIGS).id;
+    document.getElementById("fg-plinth").value = pick(PLINTHS).id;
+    for (let i = 0; i < 5; i++) {
+      forgeColors[i] = pick(SWATCHES);
+      const txt = document.getElementById(`hex-txt-${i}`);
+      const cp = document.getElementById(`hex-pick-${i}`);
+      if (txt) txt.value = forgeColors[i];
+      if (cp) cp.value = forgeColors[i];
+    }
+    rebuildForgeVoxel();
+  }
+
+  function craftCustomMiniature() {
+    const spec = getCurrentForgeSpec();
+    const tDef = TIERS[spec.tier];
+    const disc = Math.max(0.3, 1 - State.tech.supply * 0.06);
+    const credCost = Math.max(5, Math.round(tDef.baseVal * 0.5));
+    const supCost = Math.max(15, Math.round((spec.tier + 1) * 45 * disc));
+
+    if (State.credits < credCost) return showToast(`⚠️ Need ◈${fmtNum(credCost)} Credits to Forge!`);
+    if (State.supply < supCost) return showToast(`⚠️ Need ${fmtNum(supCost)} Supply to Forge!`);
+
+    State.credits -= credCost;
+    State.supply -= supCost;
+
+    // Artisan Appraisal Roll
+    let craftMult = 1.5;
+    let craftLabel = "Craft (1.5x)";
+    const r = Math.random();
+    if (State.godMode || r < 0.06) {
+      craftMult = Number((25 + Math.random() * 25).toFixed(1));
+      craftLabel = `★ MASTERWORK (${craftMult}x) ★`;
+    } else if (r < 0.18) {
+      craftMult = Number((10 + Math.random() * 8).toFixed(1));
+      craftLabel = `Relic (${craftMult}x)`;
+    } else if (r < 0.42) {
+      craftMult = Number((4.5 + Math.random() * 3.5).toFixed(1));
+      craftLabel = `Artisan (${craftMult}x)`;
+    } else if (r < 0.72) {
+      craftMult = Number((2.0 + Math.random() * 1.5).toFixed(1));
+      craftLabel = `Journeyman (${craftMult}x)`;
+    } else {
+      craftMult = Number((1.35 + Math.random() * 0.4).toFixed(2));
+      craftLabel = `Craft (${craftMult}x)`;
+    }
+
+    const customName = (document.getElementById("fg-name").value || "").trim() ||
+      `${FACTIONS[spec.faction].name.split(" ")[0]} ${CLASSES[spec.cls].name}`;
+
+    const dex = computeDexNum(spec.tier, spec.faction, spec.cls);
+    const newUnit = createCollectorUnit(dex, {
+      name: customName,
+      isCustom: true,
+      craftMult,
+      craftLabel,
+      pose: spec.pose,
+      armor: spec.armor,
+      helmet: spec.helmet,
+      weapon: spec.weapon,
+      back: spec.back,
+      plinth: spec.plinth,
+      colors: [...spec.colors]
+    });
+
+    State.stats.totalForged++;
+    addUnitToInventory(newUnit);
+    showToast(`⚒️ Forged ${newUnit.name} — ${craftLabel} Worth ◈${fmtNum(newUnit.value)}!`);
+  }
+
+  function forgeCamReset() { forgeYaw = 0.55; forgePitch = 0.2; forgeZoomVal = 1.08; }
+  function forgeToggleSpin() { forgeAutoSpin = !forgeAutoSpin; }
+  function forgeZoom(delta) { forgeZoomVal = Math.max(0.65, Math.min(1.85, forgeZoomVal + delta)); }
+
+  /* --------------------------------------------------------------------------
+     TAB 3: FORGE CRATES, COMMANDER PODS & SUPPLY DEPOT
+     -------------------------------------------------------------------------- */
+  const CRATE_DEFS = [
+    { id: 0, name: "Fyrd Timber Chest", cost: 20, minT: 0, maxT: 3, desc: "Drops T1–T4 Saxon & Dane Levies" },
+    { id: 1, name: "Royal Thegn Hoard", cost: 200, minT: 2, maxT: 6, desc: "Drops T3–T7 Retainers & Huscarls" },
+    { id: 2, name: "Huscarl Reliquary", cost: 2000, minT: 4, maxT: 8, desc: "Drops T5–T9 Jomsvikings & Ealdormen" },
+    { id: 3, name: "Bretwalda Royal Vault", cost: 15000, minT: 6, maxT: 9, desc: "Drops T7–T10 Bretwaldas & Sea-Jarls" }
+  ];
+
+  const PILOT_POD_DEFS = [
+    { id: 0, name: "Shire Reeve Writ", cost: 60, tier: 1, bonus: [8, 15], title: "Shire Reeve" },
+    { id: 1, name: "King's Thegn Oath", cost: 400, tier: 2, bonus: [18, 32], title: "Royal Thegn" },
+    { id: 2, name: "Norse Hersir Horn", cost: 2500, tier: 3, bonus: [35, 60], title: "Danelaw Hersir" },
+    { id: 3, name: "Bretwalda Crown Charter", cost: 12000, tier: 4, bonus: [70, 120], title: "High Ealdorman / Jarl" }
+  ];
+
+  const SUPPLY_BUNDLES = [
+    { sup: 500, cost: 25, name: "Fyrd Grain Wagon" },
+    { sup: 3000, cost: 120, name: "Mead-Hall Quartermaster Caravan" },
+    { sup: 20000, cost: 650, name: "Royal Wessex Granary Fleet" },
+    { sup: 120000, cost: 3200, name: "Great Heathen Army Baggage Train" }
+  ];
+
+  function initShopCrates() {
+    document.getElementById("crates-grid").innerHTML = CRATE_DEFS.map(c => `
+      <div class="unit-card">
+        <div style="font-size:11.5px;font-weight:900;color:var(--gold);">📦 ${c.name}</div>
+        <div style="font-size:9.5px;color:var(--silver-dim);min-height:26px;">${c.desc}</div>
+        <div style="font-size:11px;font-weight:800;color:var(--white);">1x: ◈${fmtNum(c.cost)}</div>
+        <div class="grid-3" style="margin-top:4px;">
+          <button class="btn btn-gold" onclick="Game.openCrate(${c.id}, 1)">1x</button>
+          <button class="btn btn-silver" onclick="Game.openCrate(${c.id}, 5)">5x</button>
+          <button class="btn btn-emerald" onclick="Game.openCrate(${c.id}, 10)">10x</button>
+        </div>
+      </div>
+    `).join("");
+
+    document.getElementById("pilot-pods-grid").innerHTML = PILOT_POD_DEFS.map(p => `
+      <div class="unit-card">
+        <div style="font-size:11px;font-weight:900;color:var(--white);">👑 ${p.name}</div>
+        <div style="font-size:9.5px;color:var(--silver-dim);">${p.title} (+${p.bonus[0]}%–${p.bonus[1]}% Stats)</div>
+        <button class="btn btn-gold" style="margin-top:4px;" onclick="Game.recruitPilot(${p.id})">Recruit (◈${fmtNum(p.cost)})</button>
+      </div>
+    `).join("");
+
+    document.getElementById("supply-depot-grid").innerHTML = SUPPLY_BUNDLES.map((b, idx) => `
+      <div class="unit-card">
+        <div style="font-size:11px;font-weight:900;color:var(--emerald);">🌾 ${b.name}</div>
+        <div style="font-size:10px;color:var(--white);">+${fmtNum(b.sup)} Supply</div>
+        <button class="btn btn-emerald" style="margin-top:4px;" onclick="Game.buySupply(${idx})">Buy (◈${fmtNum(b.cost)})</button>
+      </div>
+    `).join("");
+  }
+
+  function openCrate(crateId, count) {
+    const def = CRATE_DEFS[crateId];
+    const totalCost = def.cost * count;
+    if (State.credits < totalCost) return showToast(`⚠️ Need ◈${fmtNum(totalCost)} Credits to open ${count}x ${def.name}!`);
+    State.credits -= totalCost;
+
+    let bestUnit = null;
+    for (let i = 0; i < count; i++) {
+      const tier = def.minT + Math.floor(Math.pow(Math.random(), 1.45) * (def.maxT - def.minT + 1));
+      const faction = Math.floor(Math.random() * 10);
+      const cls = Math.floor(Math.random() * 10);
+      const dex = computeDexNum(tier, faction, cls);
+      const u = createCollectorUnit(dex);
+      addUnitToInventory(u);
+      if (!bestUnit || u.value > bestUnit.value) bestUnit = u;
+    }
+
+    showToast(`📦 Opened ${count}x ${def.name}! Best Pull: [${TIERS[bestUnit.tier].code}] ${bestUnit.name} (◈${fmtNum(bestUnit.value)})!`);
+  }
+
+  function createCommander(podId) {
+    const def = PILOT_POD_DEFS[Math.min(3, podId)];
+    const names = ["Aethelstan", "Uhtred", "Guthrum", "Byrhtnoth", "Leofric", "Ivar", "Ubba", "Halfdan", "Godwin", "Harald", "Eadric", "Sigurd"];
+    const traits = ["Shieldwall Unyielding", "Raven-Banner Fury", "Ulfberht Master", "Witan Strategist", "Boar-Snout Vanguard"];
+    const bonus = def.bonus[0] + Math.floor(Math.random() * (def.bonus[1] - def.bonus[0] + 1));
+    return {
+      id: "p_" + (State.nextUid++) + "_" + Date.now().toString(36),
+      name: names[Math.floor(Math.random() * names.length)],
+      title: def.title,
+      trait: traits[Math.floor(Math.random() * traits.length)],
+      bonus
+    };
+  }
+
+  function recruitPilot(podId) {
+    const def = PILOT_POD_DEFS[podId];
+    if (State.credits < def.cost) return showToast(`⚠️ Need ◈${fmtNum(def.cost)} Credits to recruit ${def.name}!`);
+    State.credits -= def.cost;
+    const p = createCommander(podId);
+    State.pilots.unshift(p);
+    updateHUD();
+    showToast(`👑 Recruited ${p.title} ${p.name} (+${p.bonus}% All Stats)!`);
+  }
+
+  function buySupply(idx) {
+    const b = SUPPLY_BUNDLES[idx];
+    if (State.credits < b.cost) return showToast(`⚠️ Need ◈${fmtNum(b.cost)} Credits!`);
+    State.credits -= b.cost;
+    State.supply += b.sup;
+    updateHUD();
+    showToast(`🌾 Purchased +${fmtNum(b.sup)} Supply!`);
+  }
+
+  /* --------------------------------------------------------------------------
+     TAB 4: AUCTIONS (1-LANE BARGAIN BUYER + 5-LANE SYNDICATE SELLER)
+     CRITICAL OVERRIDE: Action Button is strictly "🔨 BID (+◈1)", NEVER "SNIPE"
+     -------------------------------------------------------------------------- */
+  const RIVAL_BIDDERS = ["Mercian Reeve", "Jorvik Merchant", "Wessex Ealdorman", "Kentish Thegn", "Birka Trader"];
+
+  function spawnNextBuyerLot() {
+    const maxUnlockedTier = Math.min(9, Math.max(2, Math.floor(Math.log10(Math.max(50, State.credits)))));
+    const tier = Math.floor(Math.random() * (maxUnlockedTier + 1));
+    const faction = Math.floor(Math.random() * 10);
+    const cls = Math.floor(Math.random() * 10);
+    const dex = computeDexNum(tier, faction, cls);
+
+    const isRelic = Math.random() < 0.25;
+    const u = createCollectorUnit(dex, isRelic ? { craftMult: 2.2, craftLabel: "Journeyman (2.2x)" } : {});
+    BuyerLot.unit = u;
+    BuyerLot.thumb = getUnitThumbnail(u);
+    BuyerLot.estValue = u.value;
+    // Starts at 12%–20% value
+    const startPct = 0.12 + Math.random() * 0.08;
+    BuyerLot.currentBid = Math.max(2, Math.round(u.value * startPct));
+    BuyerLot.rivalName = RIVAL_BIDDERS[Math.floor(Math.random() * RIVAL_BIDDERS.length)];
+    BuyerLot.highBidder = BuyerLot.rivalName;
+    BuyerLot.timer = 10.0;
+    BuyerLot.intermission = 0;
+    BuyerLot.verdictText = "Bargain lot open! Place your BID before the 10.0s hammer falls!";
+
+    // Update static DOM once per lot
+    const img = document.getElementById("buyer-thumb");
+    if (img) img.src = BuyerLot.thumb;
+    const badge = document.getElementById("buyer-tier-badge");
+    if (badge) {
+      badge.textContent = TIERS[u.tier].code;
+      badge.style.color = TIERS[u.tier].color;
+    }
+    document.getElementById("buyer-title").textContent = `${u.name} (${u.craftLabel})`;
+    document.getElementById("buyer-meta").textContent = `Codex #${String(u.dexNum).padStart(4, "0")} • ${FACTIONS[u.faction].name}`;
+    document.getElementById("buyer-est").textContent = "◈" + fmtNum(BuyerLot.estValue);
+    updateBuyerAuctionDOM();
+  }
+
+  // In-place DOM text updates (zero click drops)
+  function updateBuyerAuctionDOM() {
+    document.getElementById("buyer-bid").textContent = "◈" + fmtNum(BuyerLot.currentBid);
+    const leaderEl = document.getElementById("buyer-leader");
+    leaderEl.textContent = BuyerLot.highBidder === "YOU" ? "🛡️ YOU (LEADING)" : BuyerLot.highBidder;
+    leaderEl.style.color = BuyerLot.highBidder === "YOU" ? "var(--emerald)" : "var(--crimson)";
+
+    const timerEl = document.getElementById("buyer-timer");
+    if (BuyerLot.intermission > 0) {
+      timerEl.textContent = `NEXT ${BuyerLot.intermission.toFixed(1)}s`;
+      timerEl.style.color = "var(--gold)";
+    } else {
+      timerEl.textContent = `${BuyerLot.timer.toFixed(1)}s`;
+      timerEl.style.color = BuyerLot.timer <= 2.5 ? "var(--crimson)" : "var(--white)";
+    }
+    document.getElementById("buyer-verdict-banner").textContent = BuyerLot.verdictText;
+  }
+
+  function placeBuyerBid(increment = 1) {
+    if (BuyerLot.intermission > 0 || BuyerLot.timer <= 0) return;
+    const nextBid = BuyerLot.currentBid + increment;
+    if (State.credits < nextBid) return showToast(`⚠️ Need ◈${fmtNum(nextBid)} Credits to BID!`);
+
+    BuyerLot.currentBid = nextBid;
+    BuyerLot.highBidder = "YOU";
+    // Rival AI stun lock so player can always out-bid if time remains (> 0.0s)
+    BuyerLot.rivalStunUntil = performance.now() + 950;
+    if (BuyerLot.timer < 1.5) BuyerLot.timer = 1.8;
+    BuyerLot.verdictText = `🔨 YOU BID ◈${fmtNum(BuyerLot.currentBid)}! Hold the lead!`;
+    updateBuyerAuctionDOM();
+  }
+
+  function inspectBuyerLot() {
+    if (!BuyerLot.unit) return;
+    openInspectorWithUnit(BuyerLot.unit);
+  }
+
+  // Bottom: 5-Lane Syndicate Seller Auctions
+  function populateSellerDropdown() {
+    const sel = document.getElementById("seller-unit-select");
+    if (!sel) return;
+    const available = State.units.filter(u => !u.vaulted);
+    if (available.length === 0) {
+      sel.innerHTML = `<option value="">No Unvaulted Warriors Available</option>`;
+    } else {
+      sel.innerHTML = available.map(u =>
+        `<option value="${u.uid}">[${TIERS[u.tier].code}] ${u.name} (Val: ◈${fmtNum(u.value)})</option>`
+      ).join("");
+    }
+  }
+
+  function listSelectedUnitForAuction() {
+    const sel = document.getElementById("seller-unit-select");
+    if (!sel || !sel.value) return showToast("⚠️ Select an unvaulted warrior to list!");
+    const openIdx = State.sellerLanes.findIndex(l => l === null);
+    if (openIdx === -1) return showToast("⚠️ All 5 Syndicate Seller Lanes are active!");
+    startSellerLane(openIdx, sel.value);
+  }
+
+  function startSellerLane(laneIdx, uid) {
+    const uIdx = State.units.findIndex(u => u.uid === uid);
+    if (uIdx === -1) return;
+    const unit = State.units.splice(uIdx, 1)[0];
+    const startBid = Math.max(2, Math.round(unit.value * 0.4));
+    State.sellerLanes[laneIdx] = {
+      unit,
+      thumb: getUnitThumbnail(unit),
+      currentBid: startBid,
+      highBidder: "Opening Reserve",
+      bidsCount: 0,
+      timer: 20.0,
+      spikeBanner: ""
+    };
+    populateSellerDropdown();
+    renderSellerLanes();
+    updateHUD();
+  }
+
+  function renderSellerLanes() {
+    const grid = document.getElementById("seller-lanes-grid");
+    if (!grid) return;
+    const html = State.sellerLanes.map((lane, idx) => {
+      if (!lane) {
+        return `
+          <div class="seller-lane" style="justify-content:center;align-items:center;min-height:130px;color:var(--silver-dim);">
+            <div style="font-weight:800;">Seller Lane #${idx + 1} — OPEN</div>
+            <div style="font-size:9.5px;text-align:center;">Select a warrior above or click 🔨 Auction in Tab 1</div>
+          </div>
+        `;
+      }
+      return `
+        <div class="seller-lane">
+          <div style="display:flex;gap:6px;align-items:center;">
+            <img src="${lane.thumb}" style="width:46px;height:46px;background:#07090e;border-radius:4px;border:1px solid rgba(255,255,255,0.2);">
+            <div style="min-width:0;flex:1;">
+              <div style="font-weight:900;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${lane.unit.name}</div>
+              <div style="font-size:9px;color:var(--silver-dim);">Val: ◈${fmtNum(lane.unit.value)}</div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:10.5px;">
+            <span>Bid: <b id="sl-bid-${idx}" style="color:var(--gold);">◈${fmtNum(lane.currentBid)}</b></span>
+            <span id="sl-time-${idx}" style="font-weight:900;color:var(--white);">${lane.timer.toFixed(1)}s</span>
+          </div>
+          <div id="sl-who-${idx}" style="font-size:9.5px;color:var(--emerald);">${lane.highBidder}</div>
+          <div id="sl-spike-${idx}" style="font-size:9px;font-weight:900;color:var(--gold);min-height:13px;">${lane.spikeBanner}</div>
+        </div>
+      `;
+    });
+    grid.innerHTML = html.join("");
+  }
+
+  function tickAuctions100ms() {
+    // 1. Tick Buyer Lot (10.0s live clock + 3.0s intermission)
+    if (!BuyerLot.unit) spawnNextBuyerLot();
+
+    if (BuyerLot.intermission > 0) {
+      BuyerLot.intermission = Math.max(0, BuyerLot.intermission - 0.1);
+      if (BuyerLot.intermission <= 0) {
+        spawnNextBuyerLot();
+      } else if (activeTab === 4) {
+        updateBuyerAuctionDOM();
+      }
+    } else {
+      BuyerLot.timer = Math.max(0, BuyerLot.timer - 0.1);
+      const now = performance.now();
+      // Rival AI bid chance if not stun-locked and bid is below 78% value
+      if (
+        BuyerLot.timer > 0.2 &&
+        now > BuyerLot.rivalStunUntil &&
+        BuyerLot.highBidder === "YOU" &&
+        BuyerLot.currentBid < BuyerLot.estValue * 0.78 &&
+        Math.random() < 0.11
+      ) {
+        BuyerLot.currentBid += Math.max(1, Math.round(BuyerLot.estValue * 0.04));
+        BuyerLot.highBidder = BuyerLot.rivalName;
+        BuyerLot.verdictText = `⚠️ ${BuyerLot.rivalName} counter-bid ◈${fmtNum(BuyerLot.currentBid)}! Click 🔨 BID!`;
+      }
+
+      if (BuyerLot.timer <= 0) {
+        // Hammer falls!
+        if (BuyerLot.highBidder === "YOU" && State.credits >= BuyerLot.currentBid) {
+          State.credits -= BuyerLot.currentBid;
+          addUnitToInventory(BuyerLot.unit);
+          State.stats.totalAuctions++;
+          BuyerLot.verdictText = `🏆 WON! Acquired ${BuyerLot.unit.name} for ◈${fmtNum(BuyerLot.currentBid)}!`;
+          showToast(`🔨 Won Bargain Auction: ${BuyerLot.unit.name} for ◈${fmtNum(BuyerLot.currentBid)}!`);
+        } else {
+          BuyerLot.verdictText = `🔨 SOLD to ${BuyerLot.rivalName} for ◈${fmtNum(BuyerLot.currentBid)}. Next lot in 3.0s...`;
+        }
+        BuyerLot.intermission = 3.0;
+      }
+      if (activeTab === 4) updateBuyerAuctionDOM();
+    }
+
+    // 2. Tick 5 Seller Lanes (20.0s timer, 10% NPC bid/tick, 1.5% 2x–20x [BID WAR] Spike, <=1.0s overtime reset to 2.0s)
+    let laneEnded = false;
+    State.sellerLanes.forEach((lane, idx) => {
+      if (!lane) return;
+      lane.timer = Math.max(0, lane.timer - 0.1);
+
+      if (lane.timer > 0) {
+        // 1.5% chance for 2x–20x [BID WAR] Spike!
+        if (Math.random() < 0.015) {
+          const mult = 2 + Math.floor(Math.random() * 19);
+          lane.currentBid = Math.round(lane.currentBid * mult);
+          lane.bidsCount++;
+          lane.highBidder = "🔥 Witan Jarl Syndicate";
+          lane.spikeBanner = `⚡ ${mult}x [BID WAR] SPIKE!`;
+          if (lane.timer <= 1.0) lane.timer = 2.0;
+        } else if (Math.random() < 0.10) {
+          // 10% regular NPC bid chance per tick
+          const bump = Math.max(2, Math.round(lane.unit.value * (0.06 + Math.random() * 0.08)));
+          lane.currentBid += bump;
+          lane.bidsCount++;
+          lane.highBidder = RIVAL_BIDDERS[Math.floor(Math.random() * RIVAL_BIDDERS.length)];
+          if (lane.timer <= 1.0) lane.timer = 2.0; // Overtime reset
+        }
+      }
+
+      if (lane.timer <= 0) {
+        // Settle seller lane
+        if (lane.bidsCount === 0) {
+          // Guaranteed syndicate buyout at reserve
+          lane.bidsCount = 1;
+        }
+        State.credits += lane.currentBid;
+        State.stats.totalAuctions++;
+        showToast(`🏛️ Lane #${idx + 1} Sold ${lane.unit.name} for +◈${fmtNum(lane.currentBid)}!`);
+        State.sellerLanes[idx] = null;
+        laneEnded = true;
+        updateHUD();
+      } else if (activeTab === 4) {
+        const bEl = document.getElementById(`sl-bid-${idx}`);
+        const tEl = document.getElementById(`sl-time-${idx}`);
+        const wEl = document.getElementById(`sl-who-${idx}`);
+        const sEl = document.getElementById(`sl-spike-${idx}`);
+        if (bEl) bEl.textContent = "◈" + fmtNum(lane.currentBid);
+        if (tEl) tEl.textContent = lane.timer.toFixed(1) + "s";
+        if (wEl) wEl.textContent = lane.highBidder;
+        if (sEl) sEl.textContent = lane.spikeBanner;
+      }
+    });
+
+    if (laneEnded && activeTab === 4) {
+      populateSellerDropdown();
+      renderSellerLanes();
+    }
+  }
+
+  /* --------------------------------------------------------------------------
+     TAB 5: 1V1 / 3V3 / 5V5 SHIELDWALL WARGAME ARENA & 6 SECTOR PATROLS
+     -------------------------------------------------------------------------- */
+  function setBattleMode(mode) {
+    battleMode = mode;
+    [1, 3, 5].forEach(m => {
+      const btn = document.getElementById(`mode-${m}v${m}`);
+      if (btn) btn.classList.toggle("god-on", m === mode);
+    });
+    autoFillSquad();
+    rollEnemyHost();
+    renderBattleArena();
+  }
+
+  function autoFillSquad() {
+    const sorted = [...State.units].filter(u => u.hp > 0).sort((a, b) => b.atk + b.hp - (a.atk + a.hp));
+    playerSquadIds = sorted.slice(0, battleMode).map(u => u.uid);
+    renderBattleArena();
+  }
+
+  function rollEnemyHost() {
+    const avgTier = State.units.length > 0
+      ? Math.min(9, Math.max(0, Math.round(State.units.slice(0, 5).reduce((s, u) => s + u.tier, 0) / Math.min(5, State.units.length))))
+      : 0;
+    enemyHost = [];
+    for (let i = 0; i < battleMode; i++) {
+      const t = Math.max(0, Math.min(9, avgTier + (Math.random() < 0.35 ? 1 : 0)));
+      const f = Math.floor(Math.random() * 10);
+      const c = Math.floor(Math.random() * 10);
+      enemyHost.push(createCollectorUnit(computeDexNum(t, f, c)));
+    }
+    renderBattleArena();
+  }
+
+  function renderBattleArena() {
+    if (playerSquadIds.length === 0) autoFillSquad();
+    if (enemyHost.length !== battleMode) rollEnemyHost();
+
+    const pContainer = document.getElementById("battle-player-slots");
+    const eContainer = document.getElementById("battle-enemy-slots");
+    if (!pContainer || !eContainer) return;
+
+    const pRows = [];
+    for (let i = 0; i < battleMode; i++) {
+      const u = State.units.find(x => x.uid === playerSquadIds[i]);
+      if (!u) {
+        pRows.push(`<div style="font-size:10px;color:var(--silver-dim);padding:4px;">Slot #${i + 1}: Empty</div>`);
+      } else {
+        const hpPct = Math.round((u.hp / u.maxHp) * 100);
+        pRows.push(`
+          <div style="background:var(--obsidian);padding:4px 6px;border-radius:4px;">
+            <div style="display:flex;justify-content:space-between;font-size:10px;font-weight:800;">
+              <span>[${TIERS[u.tier].code}] ${u.name} (${u.role})</span>
+              <span style="color:var(--emerald);">❤️ ${u.hp}/${u.maxHp} • ⚔️${u.atk}</span>
+            </div>
+            <div class="hp-bar-outer" style="margin-top:2px;"><div class="hp-bar-inner" style="width:${hpPct}%;"></div></div>
+          </div>
+        `);
+      }
+    }
+    pContainer.innerHTML = pRows.join("");
+
+    const eRows = enemyHost.map(e => {
+      const hpPct = Math.round((e.hp / e.maxHp) * 100);
+      return `
+        <div style="background:var(--obsidian);padding:4px 6px;border-radius:4px;">
+          <div style="display:flex;justify-content:space-between;font-size:10px;font-weight:800;">
+            <span>[${TIERS[e.tier].code}] ${e.name} (${e.role})</span>
+            <span style="color:var(--crimson);">❤️ ${e.hp}/${e.maxHp} • ⚔️${e.atk}</span>
+          </div>
+          <div class="hp-bar-outer" style="margin-top:2px;"><div class="hp-bar-inner" style="width:${hpPct}%;background:var(--crimson);"></div></div>
+        </div>
+      `;
+    });
+    eContainer.innerHTML = eRows.join("");
+  }
+
+  function hasRoleAdvantage(attRole, defRole) {
+    return (attRole === "A" && defRole === "B") ||
+           (attRole === "B" && defRole === "C") ||
+           (attRole === "C" && defRole === "A");
+  }
+
+  function executeBattleRound(order) {
+    const pSquad = playerSquadIds.map(id => State.units.find(u => u.uid === id)).filter(u => u && u.hp > 0);
+    const eSquad = enemyHost.filter(e => e && e.hp > 0);
+
+    if (pSquad.length === 0) return showToast("⚠️ Your squad has no healthy warriors! Repair in Tab 1!");
+    if (eSquad.length === 0) {
+      rollEnemyHost();
+      return;
+    }
+
+    const supCost = battleMode * 5;
+    if (State.supply < supCost) return showToast(`⚠️ Need ${supCost} Supply to march into clash!`);
+    State.supply -= supCost;
+
+    // 2D6 Tactical Dice Roll
+    const d1 = 1 + Math.floor(Math.random() * 6);
+    const d2 = 1 + Math.floor(Math.random() * 6);
+    const diceSum = d1 + d2;
+    const diceMult = 0.75 + (diceSum / 12) * 0.65;
+
+    let attMod = 1.0, defMod = 1.0;
+    if (order === "shieldwall") { attMod = 0.92; defMod = 0.65; }
+    else if (order === "wedge") { attMod = 1.25; defMod = 1.05; }
+    else if (order === "flank") { attMod = 1.18; defMod = 0.88; }
+    else if (order === "feigned") { attMod = 1.32; defMod = 1.12; }
+    else if (order === "berserk") { attMod = 1.55; defMod = 1.30; }
+
+    const logs = [`🎲 <b>2D6 Roll: [${d1} + ${d2} = ${diceSum}]</b> • Order: <b>${order.toUpperCase()}</b>`];
+
+    // Player strikes Enemy
+    pSquad.forEach(p => {
+      const target = enemyHost.find(e => e.hp > 0);
+      if (!target) return;
+      const pilot = State.pilots.find(pl => pl.id === p.pilotId);
+      const pilotMult = pilot ? (1 + pilot.bonus / 100) : 1.0;
+      const counterMult = hasRoleAdvantage(p.role, target.role) ? 1.45 : 1.0;
+      const dmg = Math.max(5, Math.round(p.atk * diceMult * attMod * pilotMult * counterMult));
+      target.hp = Math.max(0, target.hp - dmg);
+      logs.push(`⚔️ ${p.name} struck ${target.name} for <b>${dmg} DMG</b>${counterMult > 1 ? " (+45% COUNTER!)" : ""}!`);
+    });
+
+    // Surviving Enemies counter-attack
+    enemyHost.filter(e => e.hp > 0).forEach(e => {
+      const target = pSquad.find(p => p.hp > 0);
+      if (!target) return;
+      const counterMult = hasRoleAdvantage(e.role, target.role) ? 1.45 : 1.0;
+      const dmg = Math.max(3, Math.round(e.atk * 0.82 * defMod * counterMult));
+      target.hp = Math.max(0, target.hp - dmg);
+      logs.push(`🩸 ${e.name} hit ${target.name} for ${dmg} DMG.`);
+    });
+
+    // Check Victory
+    const remEnemies = enemyHost.filter(e => e.hp > 0).length;
+    if (remEnemies === 0) {
+      const totalVal = enemyHost.reduce((s, e) => s + e.value, 0);
+      const spoilsMult = 1 + State.tech.spoils * 0.12;
+      const silverWon = Math.max(15, Math.round(totalVal * 0.55 * spoilsMult));
+      State.credits += silverWon;
+      State.stats.totalBattlesWon++;
+
+      let captureMsg = "";
+      if (Math.random() < 0.45) {
+        const prized = enemyHost[Math.floor(Math.random() * enemyHost.length)];
+        const captured = createCollectorUnit(prized.dexNum);
+        addUnitToInventory(captured);
+        captureMsg = ` + CAPTURED ${captured.name}!`;
+      }
+      logs.push(`🏆 <b>SHIELDWALL VICTORY!</b> Won <b>+◈${fmtNum(silverWon)} Silver Spoils</b>${captureMsg}`);
+      showToast(`⚔️ Victory! +◈${fmtNum(silverWon)}${captureMsg}`);
+      rollEnemyHost();
+    }
+
+    const logEl = document.getElementById("battle-log");
+    if (logEl) logEl.innerHTML = logs.join("<br>");
+    updateHUD();
+    renderBattleArena();
+  }
+
+  function autoResolveBattle() {
+    for (let i = 0; i < 6; i++) {
+      const hasAlive = playerSquadIds.some(id => {
+        const u = State.units.find(x => x.uid === id);
+        return u && u.hp > 0;
+      });
+      if (!hasAlive) break;
+      executeBattleRound("wedge");
+    }
+  }
+
+  function renderPatrols() {
+    const grid = document.getElementById("patrols-grid");
+    if (!grid) return;
+    const html = PATROL_SECTORS.map(s => {
+      const assigned = State.units.filter(u => u.patrolId === s.id);
+      return `
+        <div class="unit-card">
+          <div style="font-size:11px;font-weight:900;color:var(--white);">🧭 ${s.name}</div>
+          <div style="font-size:9.5px;color:var(--silver-dim);">${s.desc}</div>
+          <div style="font-size:10px;color:var(--gold);">Yield: +◈${s.credRate}/tick • +${s.supRate} Sup</div>
+          <div style="font-size:9.5px;color:var(--emerald);">Patrolling: <b>${assigned.length} Warriors</b></div>
+          <button class="micro-btn" style="margin-top:3px;" onclick="Game.quickAssignPatrol(${s.id})">⚡ Assign Free Warrior</button>
+        </div>
+      `;
+    });
+    grid.innerHTML = html.join("");
+  }
+
+  function quickAssignPatrol(sectorId) {
+    const free = State.units.find(u => u.patrolId === null);
+    if (!free) return showToast("⚠️ All owned warriors are already assigned to patrols!");
+    free.patrolId = sectorId;
+    renderPatrols();
+    showToast(`🧭 Assigned ${free.name} to ${PATROL_SECTORS[sectorId].name}!`);
+  }
+
+  /* --------------------------------------------------------------------------
+     TAB 6: HIGH COMMAND (AUTOMATION, WITAN COMMISSIONS & 150 MILESTONES)
+     -------------------------------------------------------------------------- */
+  function toggleAutomation(key) {
+    State.auto[key] = !State.auto[key];
+    renderHighCommand();
+  }
+
+  function generateCommissions(manual = false) {
+    State.commissions = [];
+    for (let i = 0; i < 6; i++) {
+      const reqTier = Math.min(8, Math.floor(i / 2) + Math.floor(Math.random() * 3));
+      const reqClass = Math.floor(Math.random() * 10);
+      const rewardCred = Math.round(TIERS[reqTier].baseVal * 2.4);
+      State.commissions.push({
+        id: "c_" + i + "_" + Date.now(),
+        reqTier,
+        reqClass,
+        rewardCred,
+        done: false
+      });
+    }
+    if (manual) {
+      renderHighCommand();
+      showToast("📜 Royal Witan Commissions Refreshed!");
+    }
+  }
+
+  function fulfillCommission(idx) {
+    const c = State.commissions[idx];
+    if (!c || c.done) return;
+    const matchIdx = State.units.findIndex(u => !u.vaulted && u.tier >= c.reqTier && u.cls === c.reqClass);
+    if (matchIdx === -1) {
+      return showToast(`⚠️ Need an unvaulted ${TIERS[c.reqTier].code}+ ${CLASSES[c.reqClass].name}!`);
+    }
+    if (State.units.length <= 1) return showToast("⚠️ Keep at least 1 warrior in your garrison!");
+
+    const sent = State.units.splice(matchIdx, 1)[0];
+    c.done = true;
+    State.credits += c.rewardCred;
+
+    // Bonus Free Unit reward
+    const bonusDex = computeDexNum(Math.min(9, c.reqTier + 1), Math.floor(Math.random() * 10), Math.floor(Math.random() * 10));
+    const bonusUnit = createCollectorUnit(bonusDex);
+    addUnitToInventory(bonusUnit);
+
+    renderHighCommand();
+    showToast(`📜 Fulfilled Writ with ${sent.name}! +◈${fmtNum(c.rewardCred)} & Free ${bonusUnit.name}!`);
+  }
+
+  function renderHighCommand() {
+    ["march", "repair", "supply"].forEach(k => {
+      const btn = document.getElementById(`auto-${k}-btn`);
+      if (btn) {
+        const label = k === "march" ? "⚔️ Auto-March" : (k === "repair" ? "🔧 Auto-Repair" : "🌾 Auto-Supply");
+        btn.textContent = `${label}: ${State.auto[k] ? "ON" : "OFF"}`;
+        btn.classList.toggle("btn-emerald", State.auto[k]);
+      }
+    });
+
+    if (State.commissions.length === 0) generateCommissions(false);
+    document.getElementById("commissions-grid").innerHTML = State.commissions.map((c, idx) => `
+      <div class="unit-card">
+        <div style="font-size:10.5px;font-weight:900;color:var(--white);">📜 Royal Writ #${idx + 1}</div>
+        <div style="font-size:9.5px;color:var(--silver-dim);">Send: <b>${TIERS[c.reqTier].code}+ ${CLASSES[c.reqClass].name}</b></div>
+        <div style="font-size:10px;color:var(--gold);font-weight:800;">Reward: ◈${fmtNum(c.rewardCred)} + Free ${TIERS[Math.min(9, c.reqTier + 1)].code} Unit</div>
+        <button class="btn ${c.done ? "" : "btn-gold"}" ${c.done ? "disabled" : ""} onclick="Game.fulfillCommission(${idx})">
+          ${c.done ? "✔ Completed" : "📤 Dispatch Warrior"}
+        </button>
+      </div>
+    `).join("");
+
+    // 6 Milestone Books Bar
+    document.getElementById("milestone-books-bar").innerHTML = MILESTONE_BOOKS.map(b => `
+      <button class="btn ${activeMilestoneBook === b.id ? "btn-gold" : ""}" onclick="Game.selectMilestoneBook(${b.id})">
+        ${b.name}
+      </button>
+    `).join("");
+
+    renderMilestonesList();
+  }
+
+  function selectMilestoneBook(bookId) {
+    activeMilestoneBook = bookId;
+    renderHighCommand();
+  }
+
+  function getBookStatValue(statKey) {
+    if (statKey === "codexCount") return Object.keys(State.codex).length;
+    return State.stats[statKey] || 0;
+  }
+
+  function renderMilestonesList() {
+    const book = MILESTONE_BOOKS[activeMilestoneBook];
+    const curVal = getBookStatValue(book.stat);
+    const items = [];
+    for (let step = 1; step <= 25; step++) {
+      const mId = `${book.id}_${step}`;
+      const target = step * book.mult;
+      const reward = step * 75 * (book.id + 1);
+      const claimed = !!State.claimedMilestones[mId];
+      const ready = curVal >= target && !claimed;
+
+      items.push(`
+        <div style="background:var(--gunmetal);border:1px solid ${ready ? "var(--gold)" : "rgba(216,224,236,0.18)"};border-radius:5px;padding:5px 7px;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:10px;font-weight:800;color:var(--white);">Trial #${book.id * 25 + step}: ${book.desc} (${Math.min(curVal, target)}/${target})</div>
+            <div style="font-size:9px;color:var(--gold);">Reward: +◈${fmtNum(reward)} Credits</div>
+          </div>
+          <button class="micro-btn ${ready ? "god-on" : ""}" ${!ready ? "disabled" : ""} onclick="Game.claimMilestone('${mId}', ${reward})">
+            ${claimed ? "✔ Claimed" : (ready ? "✨ Claim" : "Locked")}
+          </button>
+        </div>
+      `);
+    }
+    document.getElementById("milestones-list").innerHTML = items.join("");
+  }
+
+  function claimMilestone(mId, reward) {
+    if (State.claimedMilestones[mId]) return;
+    State.claimedMilestones[mId] = true;
+    State.credits += reward;
+    updateHUD();
+    renderMilestonesList();
+    showToast(`🏆 Trial Claimed: +◈${fmtNum(reward)} Credits!`);
+  }
+
+  function claimAllMilestones() {
+    let totalWon = 0, count = 0;
+    MILESTONE_BOOKS.forEach(book => {
+      const curVal = getBookStatValue(book.stat);
+      for (let step = 1; step <= 25; step++) {
+        const mId = `${book.id}_${step}`;
+        const target = step * book.mult;
+        if (curVal >= target && !State.claimedMilestones[mId]) {
+          const reward = step * 75 * (book.id + 1);
+          State.claimedMilestones[mId] = true;
+          totalWon += reward;
+          count++;
+        }
+      }
+    });
+    if (count === 0) return showToast("📜 No unclaimed completed trials right now.");
+    State.credits += totalWon;
+    updateHUD();
+    renderHighCommand();
+    showToast(`🏆 Claimed ${count} Trials for +◈${fmtNum(totalWon)} Credits!`);
+  }
+
+  /* --------------------------------------------------------------------------
+     MODALS: 3D INSPECTOR, CODES & 1,000 CODEX
+     -------------------------------------------------------------------------- */
+  function openInspector(uid) {
+    const unit = State.units.find(u => u.uid === uid);
+    if (unit) openInspectorWithUnit(unit);
+  }
+
+  function openInspectorWithUnit(unit) {
+    VoxelKernel.buildMiniatureToKernel(unit);
+    inspSnapshot = VoxelKernel.extractSurfaceSnapshot();
+    inspYaw = 0.55;
+    inspPitch = 0.2;
+    inspZoomVal = 1.12;
+    inspOpen = true;
+
+    document.getElementById("insp-title").textContent = `${unit.name} (#${String(unit.dexNum).padStart(4, "0")})`;
+    document.getElementById("insp-details").innerHTML = `
+      <b>Tier:</b> ${TIERS[unit.tier].code} (${TIERS[unit.tier].name}) • <b>Faction:</b> ${FACTIONS[unit.faction].name}<br>
+      <b>Class:</b> ${CLASSES[unit.cls].name} • <b>Quality:</b> <span style="color:var(--gold);">${unit.craftLabel}</span><br>
+      <b>Value:</b> ◈${fmtNum(unit.value)} • <b>HP:</b> ${unit.hp}/${unit.maxHp} • <b>ATK:</b> ${unit.atk}
+    `;
+    document.getElementById("insp-trade-code").value = exportUnitTradeCode(unit);
+    document.getElementById("inspector-modal").classList.add("open");
+  }
+
+  function closeInspector() {
+    inspOpen = false;
+    document.getElementById("inspector-modal").classList.remove("open");
+  }
+
+  function inspCamReset() { inspYaw = 0.55; inspPitch = 0.2; inspZoomVal = 1.12; }
+  function inspZoom(d) { inspZoomVal = Math.max(0.65, Math.min(1.85, inspZoomVal + d)); }
+
+  function copyInspectorCode() {
+    const inp = document.getElementById("insp-trade-code");
+    inp.select();
+    document.execCommand("copy");
+    showToast("📋 Runic Trade Code Copied to Clipboard!");
+  }
+
+  function openCodesModal() { document.getElementById("codes-modal").classList.add("open"); }
+  function closeCodesModal() { document.getElementById("codes-modal").classList.remove("open"); }
+
+  function openCodexModal() {
+    document.getElementById("codex-modal").classList.add("open");
+    renderCodexModal();
+  }
+  function closeCodexModal() { document.getElementById("codex-modal").classList.remove("open"); }
+
+  function renderCodexModal() {
+    const tier = Number(document.getElementById("codex-tier-flt").value || 0);
+    const rows = [];
+    for (let f = 0; f < 10; f++) {
+      for (let c = 0; c < 10; c++) {
+        const dex = computeDexNum(tier, f, c);
+        const owned = !!State.codex[dex];
+        rows.push(`
+          <div style="background:var(--gunmetal);border:1px solid ${owned ? "var(--emerald)" : "rgba(255,255,255,0.12)"};border-radius:4px;padding:4px 6px;display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:9.5px;color:${owned ? "var(--white)" : "var(--silver-dim)"};">
+              <b>#${String(dex).padStart(4, "0")}</b> ${FACTIONS[f].name.split(" ")[0]} ${CLASSES[c].name}
+            </span>
+            <button class="micro-btn" onclick="Game.previewCodexDex(${dex})">👁️ 3D</button>
+          </div>
+        `);
+      }
+    }
+    document.getElementById("codex-matrix-grid").innerHTML = rows.join("");
+  }
+
+  function previewCodexDex(dex) {
+    const tempUnit = createCollectorUnit(dex);
+    openInspectorWithUnit(tempUnit);
+  }
+
+  /* --------------------------------------------------------------------------
+     CANVAS POINTER ORBIT & 60 FPS RENDER LOOP
+     -------------------------------------------------------------------------- */
+  function attachOrbitControls(canvasId, onDrag, onWheel) {
+    const c = document.getElementById(canvasId);
+    if (!c) return;
+    let dragging = false, lx = 0, ly = 0;
+    c.addEventListener("pointerdown", e => {
+      dragging = true;
+      lx = e.clientX;
+      ly = e.clientY;
+      c.setPointerCapture(e.pointerId);
+    });
+    c.addEventListener("pointermove", e => {
+      if (!dragging) return;
+      const dx = e.clientX - lx;
+      const dy = e.clientY - ly;
+      lx = e.clientX;
+      ly = e.clientY;
+      onDrag(dx, dy);
+    });
+    c.addEventListener("pointerup", () => { dragging = false; });
+    c.addEventListener("wheel", e => {
+      e.preventDefault();
+      onWheel(e.deltaY < 0 ? 0.1 : -0.1);
+    }, { passive: false });
+  }
+
+  function startAnimationLoops() {
+    const forgeCanvas = document.getElementById("forge-canvas");
+    const forgeCtx = forgeCanvas.getContext("2d");
+    const inspCanvas = document.getElementById("inspector-canvas");
+    const inspCtx = inspCanvas.getContext("2d");
+
+    attachOrbitControls("forge-canvas", (dx, dy) => {
+      forgeAutoSpin = false;
+      forgeYaw += dx * 0.012;
+      forgePitch = Math.max(-0.65, Math.min(0.85, forgePitch + dy * 0.012));
+    }, dz => forgeZoom(dz));
+
+    attachOrbitControls("inspector-canvas", (dx, dy) => {
+      inspYaw += dx * 0.012;
+      inspPitch = Math.max(-0.65, Math.min(0.85, inspPitch + dy * 0.012));
+    }, dz => inspZoom(dz));
+
+    function frame() {
+      if (activeTab === 2 && forgeSnapshot) {
+        if (forgeAutoSpin) forgeYaw += 0.012;
+        VoxelKernel.renderSnapshot(forgeCtx, forgeSnapshot, forgeYaw, forgePitch, forgeZoomVal);
+      }
+      if (inspOpen && inspSnapshot) {
+        inspYaw += 0.01;
+        VoxelKernel.renderSnapshot(inspCtx, inspSnapshot, inspYaw, inspPitch, inspZoomVal);
+      }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+
+    // 100ms Auction & Economy Tick
+    let secCounter = 0;
+    setInterval(() => {
+      tickAuctions100ms();
+      secCounter++;
+      // Every 2.0 seconds: Patrol spoils & High Command automation
+      if (secCounter >= 20) {
+        secCounter = 0;
+        tickPatrolsAndAutomation();
+      }
+    }, 100);
+
+    // Auto-save every 15 seconds
+    setInterval(() => saveGame(false), 15000);
+  }
+
+  function tickPatrolsAndAutomation() {
+    // 1. Sector Patrol Spoils
+    let credGain = 0, supGain = 0, patCount = 0;
+    const spoilsMult = 1 + State.tech.spoils * 0.12;
+    State.units.forEach(u => {
+      if (u.patrolId !== null && PATROL_SECTORS[u.patrolId]) {
+        const sec = PATROL_SECTORS[u.patrolId];
+        const tierMult = 1 + u.tier * 0.35;
+        credGain += Math.round(sec.credRate * tierMult * spoilsMult);
+        supGain += Math.round(sec.supRate * tierMult);
+        patCount++;
+      }
+    });
+    if (patCount > 0) {
+      State.credits += credGain;
+      State.supply += supGain;
+      State.stats.totalPatrolTicks += patCount;
+    }
+
+    // 2. Automation Toggles
+    if (State.auto.supply && State.supply < 250 && State.credits >= 25) {
+      State.credits -= 25;
+      State.supply += 500;
+    }
+    if (State.auto.repair) {
+      State.units.forEach(u => {
+        if (u.hp < u.maxHp && State.supply >= 15) {
+          State.supply -= 10;
+          u.hp = u.maxHp;
+        }
+      });
+    }
+    if (State.auto.march && State.supply >= 50) {
+      executeBattleRound("shieldwall");
+    }
+
+    updateHUD();
+  }
+
+  let toastTimer = null;
+  function showToast(msg) {
+    const el = document.getElementById("toast-banner");
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), 2900);
+  }
+
+  /* --------------------------------------------------------------------------
+     INITIALIZATION
+     -------------------------------------------------------------------------- */
+  function init() {
+    initForgeControls();
+    initShopCrates();
+
+    const loaded = loadGame();
+    if (!loaded || State.units.length === 0) {
+      // Grant starter Anglo-Saxon & Norse Shieldwall garrison
+      addUnitToInventory(createCollectorUnit(computeDexNum(1, 0, 0), { name: "Wessex Royal Huscarl" }));
+      addUnitToInventory(createCollectorUnit(computeDexNum(1, 5, 6), { name: "Jelling Dane Berserker" }));
+      addUnitToInventory(createCollectorUnit(computeDexNum(0, 1, 1), { name: "Mercian Fyrd Spearman" }));
+      State.pilots.push(createCommander(0));
+      State.units[0].pilotId = State.pilots[0].id;
+      State.units[2].patrolId = 0;
+    }
+
+    generateCommissions(false);
+    spawnNextBuyerLot();
+    rebuildForgeVoxel();
+    renderInventory();
+    startAnimationLoops();
+  }
+
+  return {
+    toggleGodMode,
+    saveGame,
+    switchTab,
+    renderInventory,
+    upgradeTech,
+    assignPilot,
+    assignPatrol,
+    toggleVaultUnit,
+    repairUnit,
+    repairAllUnits,
+    salvageUnit,
+    quickAuctionUnit,
+    setZoneColor,
+    rebuildForgeVoxel,
+    randomizeForge,
+    craftCustomMiniature,
+    forgeCamReset,
+    forgeToggleSpin,
+    forgeZoom,
+    openCrate,
+    recruitPilot,
+    buySupply,
+    placeBuyerBid,
+    inspectBuyerLot,
+    listSelectedUnitForAuction,
+    setBattleMode,
+    autoFillSquad,
+    rollEnemyHost,
+    executeBattleRound,
+    autoResolveBattle,
+    quickAssignPatrol,
+    toggleAutomation,
+    generateCommissions,
+    fulfillCommission,
+    selectMilestoneBook,
+    claimMilestone,
+    claimAllMilestones,
+    openInspector,
+    closeInspector,
+    inspCamReset,
+    inspZoom,
+    copyInspectorCode,
+    openCodesModal,
+    closeCodesModal,
+    redeemTradeCode,
+    quickCode,
+    openCodexModal,
+    closeCodexModal,
+    renderCodexModal,
+    previewCodexDex,
+    init
+  };
+})();
+
+window.onload = function () {
+  Game.init();
+};
+</script>
+</body>
+</html>
